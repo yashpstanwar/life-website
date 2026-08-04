@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /donate/success
+Disallow: /donate/failed
+
+Sitemap: https://REPLACE-WITH-YOUR-DOMAIN/sitemap.xml
