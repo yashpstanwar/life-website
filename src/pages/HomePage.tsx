@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageId, Language } from '../types';
-import { PILLARS } from '../data';
+import { PILLARS, IMPACT_STATS, PARTNERS } from '../data';
 import { DonationBand } from '../components/DonationBand';
 import { SignalBars } from '../components/SignalBars';
 import { ArrowRight } from 'lucide-react';
@@ -54,44 +54,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
         </div>
       </section>
 
-      {/* F1: Impact Strip — Numbers replaced with [0], keeping labels */}
+      {/* Impact strip — figures live in src/data.ts */}
       <section className="bg-[#EFEDE6] hairline-b py-8 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#8E9BB5]/30">
-          <div className="pt-4 md:pt-0 md:px-4 text-center md:text-left">
-            <span className="block font-mono text-3xl sm:text-4xl font-bold text-[#101C3A] mb-1">
-              [0]
-            </span>
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-              VILLAGES REACHED
-            </span>
-          </div>
-
-          <div className="pt-4 md:pt-0 md:px-4 text-center md:text-left">
-            <span className="block font-mono text-3xl sm:text-4xl font-bold text-[#101C3A] mb-1">
-              [0]
-            </span>
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-              PEOPLE TRAINED
-            </span>
-          </div>
-
-          <div className="pt-4 md:pt-0 md:px-4 text-center md:text-left">
-            <span className="block font-mono text-3xl sm:text-4xl font-bold text-[#101C3A] mb-1">
-              [0]
-            </span>
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-              CAMPAIGNS PRODUCED
-            </span>
-          </div>
-
-          <div className="pt-4 md:pt-0 md:px-4 text-center md:text-left">
-            <span className="block font-mono text-3xl sm:text-4xl font-bold text-[#101C3A] mb-1">
-              [0]
-            </span>
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-              YEARS OF WORK
-            </span>
-          </div>
+          {IMPACT_STATS.map((stat) => (
+            <div key={stat.label} className="pt-4 md:pt-0 md:px-4 text-center md:text-left">
+              <span className="block font-mono text-3xl sm:text-4xl font-bold text-[#101C3A] mb-1">
+                {stat.value}
+              </span>
+              <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
+                {stat.label}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -177,11 +152,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
           <p className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5]">
             SUPPORTED BY INSTITUTIONS & PARTNERS
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 opacity-60 filter grayscale text-xs font-mono text-[#8E9BB5]">
-            <span className="border border-[#8E9BB5]/40 px-4 py-2 rounded-[4px]">Government of Rajasthan [placeholder]</span>
-            <span className="border border-[#8E9BB5]/40 px-4 py-2 rounded-[4px]">UNICEF Rajasthan [placeholder]</span>
-            <span className="border border-[#8E9BB5]/40 px-4 py-2 rounded-[4px]">Jaipur Academic Council [placeholder]</span>
-            <span className="border border-[#8E9BB5]/40 px-4 py-2 rounded-[4px]">State Literacy Mission [placeholder]</span>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-[#8E9BB5]">
+            {PARTNERS.map((partner) => (
+              <span
+                key={partner}
+                className="border border-[#8E9BB5]/40 px-4 py-2 rounded-[4px] uppercase tracking-wider"
+              >
+                {partner}
+              </span>
+            ))}
           </div>
         </div>
       </section>

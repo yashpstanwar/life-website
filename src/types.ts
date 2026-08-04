@@ -4,7 +4,6 @@ export type PageId =
   | 'about'
   | 'work'
   | 'programme-detail'
-  | 'research'
   | 'training'
   | 'get-involved'
   | 'contact'

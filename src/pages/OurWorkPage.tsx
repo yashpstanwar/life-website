@@ -9,14 +9,11 @@ interface OurWorkPageProps {
 
 export const OurWorkPage: React.FC<OurWorkPageProps> = ({ onNavigate }) => {
   const [selectedPillar, setSelectedPillar] = useState<string>('All');
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('All Districts');
 
-  const districts = ['All Districts', 'Barmer', 'Jaipur', 'Jaisalmer', 'Bikaner', 'Udaipur'];
 
   const filteredProgrammes = PROGRAMMES.filter((item) => {
     const pillarMatch = selectedPillar === 'All' || item.pillarName === selectedPillar;
-    const districtMatch = selectedDistrict === 'All Districts' || item.district.includes(selectedDistrict);
-    return pillarMatch && districtMatch;
+    return pillarMatch;
   });
 
   return (
@@ -38,7 +35,7 @@ export const OurWorkPage: React.FC<OurWorkPageProps> = ({ onNavigate }) => {
 
       {/* Main Content Area on #EFEDE6 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-8">
-        {/* Filter Chips & District Dropdown */}
+        {/* Filter chips */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#8E9BB5]/20 pb-6">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-xs text-[#8E9BB5] mr-2 flex items-center">
@@ -67,20 +64,6 @@ export const OurWorkPage: React.FC<OurWorkPageProps> = ({ onNavigate }) => {
                 {p.title}
               </button>
             ))}
-          </div>
-
-          {/* District Dropdown */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
-            <label className="font-mono text-xs text-[#8E9BB5] uppercase">DISTRICT:</label>
-            <select
-              value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-1.5 font-mono text-xs text-[#14160F] focus-marigold"
-            >
-              {districts.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
           </div>
         </div>
 

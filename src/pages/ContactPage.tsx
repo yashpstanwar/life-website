@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, CheckCircle2 } from 'lucide-react';
+import { ORG } from '../data';
 
 export const ContactPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -56,7 +57,11 @@ export const ContactPage: React.FC = () => {
                 <div>
                   <span className="font-mono text-xs text-[#8E9BB5] block uppercase">JAIPUR HEADQUARTERS</span>
                   <span className="text-[#101C3A] font-bold">
-                    Indian Institute of Development and Communication (I.I.D.C.) [placeholder address, Jaipur, Rajasthan 302001]
+                    {ORG.addressLines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
                   </span>
                 </div>
               </div>
@@ -64,13 +69,24 @@ export const ContactPage: React.FC = () => {
               {/* Map representation */}
               <div className="py-4 space-y-2">
                 <span className="font-mono text-xs text-[#8E9BB5] block uppercase">LOCATION MAP</span>
-                <div className="relative h-48 bg-[#101C3A] rounded-[4px] overflow-hidden flex items-center justify-center text-[#EFEDE6] hairline-all">
-                  <div className="text-center font-mono text-xs text-[#8E9BB5]">
-                    <MapPin size={24} className="mx-auto text-[#E39B2C] mb-1" />
-                    <span>EMBEDDED MAP PREVIEW [PLACEHOLDER]</span>
-                    <span className="block text-[10px] text-[#8E9BB5]/60 mt-1">Jaipur, Rajasthan, India</span>
-                  </div>
+                <div className="relative h-64 rounded-[4px] overflow-hidden hairline-all bg-[#101C3A]">
+                  <iframe
+                    src={ORG.mapEmbedUrl}
+                    title={`Map to ${ORG.shortName}, ${ORG.addressOneLine}`}
+                    className="w-full h-full border-0"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
                 </div>
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=26.94126850466042,75.74466634855588"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs text-[#2C6E8F] hover:underline inline-block"
+                >
+                  Get directions →
+                </a>
               </div>
 
               {/* Phone */}
@@ -78,7 +94,15 @@ export const ContactPage: React.FC = () => {
                 <Phone size={18} className="text-[#2C6E8F] flex-shrink-0" />
                 <div>
                   <span className="font-mono text-xs text-[#8E9BB5] block uppercase">PHONE</span>
-                  <span className="font-mono text-sm text-[#101C3A] font-bold">+91 [placeholder phone number]</span>
+                  {ORG.phones.map((phone) => (
+                    <a
+                      key={phone}
+                      href={`tel:${phone.replace(/\s/g, '')}`}
+                      className="font-mono text-sm text-[#101C3A] font-bold block hover:text-[#2C6E8F]"
+                    >
+                      {phone}
+                    </a>
+                  ))}
                 </div>
               </div>
 
@@ -87,7 +111,12 @@ export const ContactPage: React.FC = () => {
                 <Mail size={18} className="text-[#2C6E8F] flex-shrink-0" />
                 <div>
                   <span className="font-mono text-xs text-[#8E9BB5] block uppercase">EMAIL</span>
-                  <span className="font-mono text-sm text-[#2C6E8F] font-bold">contact@[placeholder].org</span>
+                  <a
+                    href={`mailto:${ORG.email}`}
+                    className="font-mono text-sm text-[#2C6E8F] font-bold hover:underline break-all"
+                  >
+                    {ORG.email}
+                  </a>
                 </div>
               </div>
 
@@ -96,7 +125,7 @@ export const ContactPage: React.FC = () => {
                 <Clock size={18} className="text-[#2C6E8F] flex-shrink-0" />
                 <div>
                   <span className="font-mono text-xs text-[#8E9BB5] block uppercase">OFFICE HOURS</span>
-                  <span className="font-mono text-xs text-[#101C3A]">Mon – Sat: 09:30 AM – 06:00 PM IST [placeholder]</span>
+                  <span className="font-mono text-xs text-[#101C3A]">Mon – Sat: 09:30 AM – 06:00 PM IST</span>
                 </div>
               </div>
 
@@ -183,53 +212,6 @@ export const ContactPage: React.FC = () => {
             )}
           </div>
 
-        </div>
-
-        {/* Below: Three separate contact rows with mono labels: Media, Research commissions, CSR partnerships */}
-        <div className="border-t border-[#8E9BB5]/30 pt-12 space-y-6">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5]">
-            DEPARTMENTAL EMAIL DIRECTORY
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-            
-            <div className="bg-white p-5 rounded-[4px] hairline-all space-y-2">
-              <span className="text-[#E39B2C] font-bold block uppercase tracking-wider">
-                MEDIA & PRESS
-              </span>
-              <p className="font-sans-devanagari text-xs text-[#8E9BB5]">
-                Press releases, documentary broadcast permissions & media interviews.
-              </p>
-              <a href="mailto:media@[placeholder].org" className="text-[#2C6E8F] font-bold block underline">
-                media@[placeholder].org
-              </a>
-            </div>
-
-            <div className="bg-white p-5 rounded-[4px] hairline-all space-y-2">
-              <span className="text-[#E39B2C] font-bold block uppercase tracking-wider">
-                RESEARCH COMMISSIONS
-              </span>
-              <p className="font-sans-devanagari text-xs text-[#8E9BB5]">
-                Socio-economic field surveys, evaluation studies & advisory consultancies.
-              </p>
-              <a href="mailto:research@[placeholder].org" className="text-[#2C6E8F] font-bold block underline">
-                research@[placeholder].org
-              </a>
-            </div>
-
-            <div className="bg-white p-5 rounded-[4px] hairline-all space-y-2">
-              <span className="text-[#E39B2C] font-bold block uppercase tracking-wider">
-                CSR PARTNERSHIPS
-              </span>
-              <p className="font-sans-devanagari text-xs text-[#8E9BB5]">
-                Corporate social responsibility initiatives, donor grants & field training camps.
-              </p>
-              <a href="mailto:csr@[placeholder].org" className="text-[#2C6E8F] font-bold block underline">
-                csr@[placeholder].org
-              </a>
-            </div>
-
-          </div>
         </div>
 
       </section>

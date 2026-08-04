@@ -20,13 +20,13 @@ interface LegalDoc {
  * on the registered domain. These are drafted for an Indian registered
  * society accepting 80G-eligible donations.
  *
- * Replace every [placeholder] before going live, and have the trustees or
- * your CA read these through — they are a starting draft, not legal advice.
+ * Have the trustees or your CA read these through before launch — they are a
+ * working draft, not legal advice.
  */
 const DOCS: Record<Doc, LegalDoc> = {
   privacy: {
     title: 'Privacy Policy',
-    updated: '[placeholder — date of adoption]',
+    updated: '5 August 2026',
     intro:
       'LIFE, the Indian Institute of Development and Communication (I.I.D.C.), a society registered in Jaipur, Rajasthan, collects personal information only where it is needed to deliver our programmes, issue tax receipts, and meet our statutory reporting duties.',
     sections: [
@@ -60,13 +60,13 @@ const DOCS: Record<Doc, LegalDoc> = {
       {
         heading: 'How long we keep it',
         body: [
-          'Donation records are retained for at least eight financial years, as required for income tax assessment and audit. Enquiry and application records are retained for [placeholder] years and then deleted.',
+          'Donation records are retained for at least eight financial years, as required for income tax assessment and audit. Enquiry and application records are retained for three years and then deleted.',
         ],
       },
       {
         heading: 'Your rights',
         body: [
-          'You may ask us for a copy of the information we hold about you, ask us to correct it, ask us to stop contacting you, or ask us to delete it where we are not legally required to retain it. Write to [placeholder@domain] and we will respond within 30 days.',
+          'You may ask us for a copy of the information we hold about you, ask us to correct it, ask us to stop contacting you, or ask us to delete it where we are not legally required to retain it. Write to lifengo.org@gmail.com and we will respond within 30 days.',
           'Donating anonymously is supported: tick the anonymous option and your name will be withheld from all published donor lists, though we must still retain it in our statutory records.',
         ],
       },
@@ -79,21 +79,21 @@ const DOCS: Record<Doc, LegalDoc> = {
       {
         heading: 'Contact',
         body: [
-          'Indian Institute of Development and Communication (I.I.D.C.), [placeholder address], Jaipur, Rajasthan. Email [placeholder@domain]. Phone +91 [placeholder].',
+          'Indian Institute of Development and Communication (I.I.D.C.), 19, Shri Ram Nagar-B, Kanta, Jhotwara, Jaipur, Rajasthan 302012. Email lifengo.org@gmail.com. Phone +91 70147 78387.',
         ],
       },
     ],
   },
   terms: {
     title: 'Terms of Service',
-    updated: '[placeholder — date of adoption]',
+    updated: '5 August 2026',
     intro:
       'These terms govern your use of this website and any donation you make through it. By using the site you accept them.',
     sections: [
       {
         heading: 'About us',
         body: [
-          'This site is operated by the Indian Institute of Development and Communication (I.I.D.C.), operating publicly as LIFE, a society registered under the Rajasthan Societies Registration Act, registration number [placeholder], with its registered office in Jaipur, Rajasthan.',
+          'This site is operated by the Indian Institute of Development and Communication (I.I.D.C.), operating publicly as LIFE, a society registered under the Rajasthan Societies Registration Act, with its registered office at 19, Shri Ram Nagar-B, Kanta, Jhotwara, Jaipur, Rajasthan 302012.',
         ],
       },
       {
@@ -135,7 +135,7 @@ const DOCS: Record<Doc, LegalDoc> = {
   },
   refund: {
     title: 'Refund & Cancellation Policy',
-    updated: '[placeholder — date of adoption]',
+    updated: '5 August 2026',
     intro:
       'Donations to LIFE are voluntary contributions and are generally non-refundable, because funds are committed to programme work shortly after receipt. We recognise that genuine mistakes happen, and we handle them as set out below.',
     sections: [
@@ -151,7 +151,7 @@ const DOCS: Record<Doc, LegalDoc> = {
       {
         heading: 'How to request one',
         body: [
-          'Email [placeholder@domain] within 7 days of the transaction with your payment id, the date, the amount and a short explanation. We will acknowledge within 3 working days.',
+          'Email lifengo.org@gmail.com within 7 days of the transaction with your payment id, the date, the amount and a short explanation. We will acknowledge within 3 working days.',
           'Approved refunds are returned to the original payment method within 7 to 10 working days. The timing of the credit reaching your account depends on your bank.',
         ],
       },
@@ -165,12 +165,12 @@ const DOCS: Record<Doc, LegalDoc> = {
       {
         heading: 'Cancelling monthly giving',
         body: [
-          'Monthly donations can be cancelled at any time and take effect before the next scheduled deduction. Email [placeholder@domain] or use the cancellation link in your Razorpay subscription confirmation. Cancellation stops future deductions; it does not refund past ones.',
+          'Monthly donations can be cancelled at any time and take effect before the next scheduled deduction. Email lifengo.org@gmail.com or use the cancellation link in your Razorpay subscription confirmation. Cancellation stops future deductions; it does not refund past ones.',
         ],
       },
       {
         heading: 'Contact',
-        body: ['Email [placeholder@domain] · Phone +91 [placeholder] · Jaipur, Rajasthan.'],
+        body: ['Email lifengo.org@gmail.com · Phone +91 70147 78387 · Jaipur, Rajasthan.'],
       },
     ],
   },
@@ -206,11 +206,7 @@ export const LegalPage: React.FC<{ doc: Doc }> = ({ doc }) => {
             </div>
           ))}
 
-          <div className="hairline-all rounded-[4px] p-5 bg-white/60 font-mono text-xs text-[#8E9BB5] leading-relaxed">
-            This document is a draft prepared for review. Every [placeholder] must be completed, and the
-            text should be approved by the governing body and your chartered accountant before the site
-            goes live.
-          </div>
+
         </article>
       </section>
     </div>

@@ -17,7 +17,6 @@ import { DonateSuccessPage, DonateFailurePage } from './pages/DonateSuccessPage'
 import { AboutPage } from './pages/AboutPage';
 import { OurWorkPage } from './pages/OurWorkPage';
 import { ProgrammeDetailPage } from './pages/ProgrammeDetailPage';
-import { ResearchPage } from './pages/ResearchPage';
 import { TrainingPage } from './pages/TrainingPage';
 import { GetInvolvedPage } from './pages/GetInvolvedPage';
 import { ContactPage } from './pages/ContactPage';
@@ -34,7 +33,6 @@ export const PAGE_PATHS: Record<PageId, string> = {
   about: '/about',
   work: '/our-work',
   'programme-detail': '/our-work',
-  research: '/research',
   training: '/training',
   'get-involved': '/get-involved',
   contact: '/contact',
@@ -45,7 +43,6 @@ const PATH_TO_PAGE: Record<string, PageId> = {
   '/donate': 'donate',
   '/about': 'about',
   '/our-work': 'work',
-  '/research': 'research',
   '/training': 'training',
   '/get-involved': 'get-involved',
   '/contact': 'contact',
@@ -125,7 +122,6 @@ function Layout({ language, onToggleLanguage }: { language: Language; onToggleLa
           <Route path="/about" element={<AboutPage onNavigate={onNavigate} />} />
           <Route path="/our-work" element={<OurWorkPage onNavigate={onNavigate} />} />
           <Route path="/our-work/:id" element={<ProgrammeDetailRoute />} />
-          <Route path="/research" element={<ResearchPage onNavigate={onNavigate} />} />
           <Route path="/training" element={<TrainingPage onNavigate={onNavigate} />} />
           <Route path="/get-involved" element={<GetInvolvedPage onNavigate={onNavigate} />} />
           <Route path="/contact" element={<ContactPage />} />

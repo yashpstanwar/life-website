@@ -19,7 +19,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems: { id: PageId; labelEn: string; labelHi: string }[] = [
     { id: 'work', labelEn: 'Our Work', labelHi: 'हमारा कार्य' },
-    { id: 'research', labelEn: 'Research', labelHi: 'अनुसंधान' },
     { id: 'training', labelEn: 'Training', labelHi: 'प्रशिक्षण' },
     { id: 'about', labelEn: 'About', labelHi: 'हमारे बारे में' },
     { id: 'get-involved', labelEn: 'Get Involved', labelHi: 'जुड़ें' },

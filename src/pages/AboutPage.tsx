@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageId } from '../types';
-import { OBJECTIVES, GOVERNING_BODY } from '../data';
+import { OBJECTIVES, ORG } from '../data';
 import { Download, FileText, CheckCircle2 } from 'lucide-react';
 
 interface AboutPageProps {
@@ -45,10 +45,10 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
           
           <div className="space-y-4 font-sans-devanagari text-base text-[#14160F] leading-relaxed">
             <p>
-              The Indian Institute of Development and Communication (I.I.D.C.), known as LIFE, is an autonomous, non-profit society established in Jaipur, Rajasthan [placeholder]. Founded to bridge the critical gap between development policy formulation and grassroots execution, the institute specializes in designing culturally resonant audio-visual communication campaigns, conducting independent socio-economic field research, and training rural health and literacy workers across Rajasthan and neighboring regions.
+              The Indian Institute of Development and Communication (I.I.D.C.), known as LIFE, is an autonomous, non-profit society established in Jaipur, Rajasthan. Founded to bridge the critical gap between development policy formulation and grassroots execution, the institute specializes in designing culturally resonant audio-visual communication campaigns, conducting independent socio-economic field research, and training rural health and literacy workers across Rajasthan and neighboring regions.
             </p>
             <p>
-              Operating without political affiliation and dedicated strictly to non-profit social reform, I.I.D.C. collaborates with government departments, educational bodies, and civil society institutions to ensure public welfare schemes reach deprived communities with clarity, empathy, and measurable impact [placeholder].
+              Operating without political affiliation and dedicated strictly to non-profit social reform, I.I.D.C. collaborates with government departments, educational bodies, and civil society institutions to ensure public welfare schemes reach deprived communities with clarity, empathy, and measurable impact.
             </p>
           </div>
         </div>
@@ -81,42 +81,6 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
                 </div>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* A2: Section "Governing body" (Four-across portrait grid) */}
-      <section className="py-16 px-4 sm:px-8 bg-[#EFEDE6] hairline-b">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div>
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest block">
-              LEADERSHIP & AUDIT
-            </span>
-            <h2 className="font-fraunces text-3xl font-bold text-[#101C3A] mt-1">
-              Governing Body
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {GOVERNING_BODY.map((member, i) => (
-              <div key={i} className="bg-white p-6 rounded-[4px] hairline-all space-y-3">
-                {/* Silhouette portrait placeholder */}
-                <div className="w-16 h-16 bg-[#101C3A]/10 text-[#101C3A] rounded-[4px] flex items-center justify-center font-mono font-bold text-lg">
-                  [P{i+1}]
-                </div>
-                <div>
-                  <h3 className="font-fraunces text-lg font-bold text-[#101C3A]">
-                    {member.name}
-                  </h3>
-                  <p className="font-mono text-xs text-[#E39B2C] uppercase tracking-wider">
-                    {member.role}
-                  </p>
-                </div>
-                <p className="font-sans-devanagari text-xs text-[#8E9BB5] leading-relaxed">
-                  {member.bio}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -166,13 +130,17 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
               <h3 className="font-mono text-xs uppercase tracking-widest text-[#E39B2C]">
                 INSTITUTIONAL CERTIFICATES
               </h3>
+              <p className="font-sans-devanagari text-xs text-[#8E9BB5] leading-relaxed">
+                Copies of our registration and tax-exemption documents are shared with donors,
+                partners and auditors on request. Write to us and we will send them across.
+              </p>
               <div className="space-y-3 font-mono text-xs text-[#8E9BB5]">
                 <div className="flex items-center justify-between p-3 bg-[#101C3A] rounded-[4px] border border-[#8E9BB5]/20">
                   <div className="flex items-center space-x-2">
                     <FileText size={16} className="text-[#2C6E8F]" />
                     <span className="text-[#EFEDE6]">Society Registration Certificate</span>
                   </div>
-                  <span>Reg. No. [placeholder]</span>
+                  <span>On request</span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-[#101C3A] rounded-[4px] border border-[#8E9BB5]/20">
@@ -180,7 +148,7 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
                     <CheckCircle2 size={16} className="text-[#2C6E8F]" />
                     <span className="text-[#EFEDE6]">Income Tax 12A Certificate</span>
                   </div>
-                  <span>12A [placeholder]</span>
+                  <span>On request</span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-[#101C3A] rounded-[4px] border border-[#8E9BB5]/20">
@@ -188,44 +156,8 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
                     <CheckCircle2 size={16} className="text-[#2C6E8F]" />
                     <span className="text-[#EFEDE6]">Tax Exemption 80G Approval</span>
                   </div>
-                  <span>80G [placeholder]</span>
+                  <span>On request</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* "Where your money goes" — horizontal 100% stacked bar in #E39B2C, #2C6E8F, #8E9BB5 */}
-          <div className="space-y-4 border-t border-[#8E9BB5]/30 pt-8">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5]">
-              WHERE YOUR MONEY GOES (ANNUAL BUDGET UTILIZATION)
-            </h3>
-            
-            {/* 100% stacked bar */}
-            <div className="w-full h-8 bg-[#142348] rounded-[4px] flex overflow-hidden border border-[#8E9BB5]/30">
-              <div style={{ width: '78%' }} className="bg-[#E39B2C] h-full flex items-center justify-center font-mono text-[11px] font-bold text-[#101C3A]" title="78% Programmes">
-                78%
-              </div>
-              <div style={{ width: '15%' }} className="bg-[#2C6E8F] h-full flex items-center justify-center font-mono text-[11px] font-bold text-[#EFEDE6]" title="15% Training">
-                15%
-              </div>
-              <div style={{ width: '7%' }} className="bg-[#8E9BB5] h-full flex items-center justify-center font-mono text-[11px] font-bold text-[#101C3A]" title="7% Admin">
-                7%
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="flex flex-wrap gap-6 font-mono text-xs text-[#8E9BB5]">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-[#E39B2C] rounded-[1px]"></div>
-                <span>Direct Field Programmes & Campaigns: [placeholder]%</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-[#2C6E8F] rounded-[1px]"></div>
-                <span>Volunteer & Master Training: [placeholder]%</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-[#8E9BB5] rounded-[1px]"></div>
-                <span>Administration & Governance: [placeholder]%</span>
               </div>
             </div>
           </div>
@@ -245,12 +177,14 @@ export const AboutPage: React.FC<AboutPageProps> = () => {
                 <span className="text-[#EFEDE6]">Registered Society, Jaipur, Rajasthan</span>
               </div>
               <div className="p-3 bg-[#142348] rounded-[4px] space-y-1">
-                <span className="text-[#8E9BB5] block">REGISTRATION NUMBER</span>
-                <span className="text-[#EFEDE6] font-bold">Reg. No. [placeholder]</span>
+                <span className="text-[#8E9BB5] block">REGISTERED OFFICE</span>
+                <span className="text-[#EFEDE6]">{ORG.addressOneLine}</span>
               </div>
               <div className="p-3 bg-[#142348] rounded-[4px] space-y-1">
-                <span className="text-[#8E9BB5] block">TAX EXEMPTION STATUS</span>
-                <span className="text-[#EFEDE6] font-bold">12A & 80G [placeholder]</span>
+                <span className="text-[#8E9BB5] block">CONTACT</span>
+                <a href={`mailto:${ORG.email}`} className="text-[#EFEDE6] font-bold break-all hover:text-[#E39B2C]">
+                  {ORG.email}
+                </a>
               </div>
             </div>
           </div>

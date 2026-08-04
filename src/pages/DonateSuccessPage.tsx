@@ -171,8 +171,8 @@ export const DonateFailurePage: React.FC<DonateFailurePageProps> = ({ onNavigate
 
         <div className="font-mono text-xs text-[#8E9BB5] pt-2">
           Need assistance? Contact support at{' '}
-          <a href="mailto:support@[placeholder].org" className="text-[#2C6E8F] underline">
-            support@[placeholder].org
+          <a href="mailto:lifengo.org@gmail.com" className="text-[#2C6E8F] underline">
+            lifengo.org@gmail.com
           </a>
         </div>
 

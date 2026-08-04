@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageId, Language } from '../types';
-import { PILLARS } from '../data';
+import { PILLARS, ORG } from '../data';
 
 interface FooterProps {
   onNavigate: (page: PageId) => void;
@@ -27,8 +27,8 @@ export const Footer: React.FC<FooterProps> = ({
           <p className="font-sans-devanagari text-xs text-[#8E9BB5] leading-relaxed">
             Indian Institute of Development and Communication (I.I.D.C.)
           </p>
-          <p className="font-sans-devanagari text-xs text-[#8E9BB5] leading-relaxed italic">
-            Pursued without distinction of colour, class, religion, caste or gender, and free of political affiliation.
+          <p className="font-fraunces text-base text-[#EFEDE6]/90 leading-snug italic max-w-xs">
+            {ORG.motto}
           </p>
 
           <div className="pt-2">
@@ -66,15 +66,30 @@ export const Footer: React.FC<FooterProps> = ({
             Contact
           </h4>
           <div className="space-y-2 text-xs font-sans-devanagari">
-            <p className="text-[#8E9BB5]">
-              Jaipur, Rajasthan [placeholder]
+            <p className="text-[#8E9BB5] leading-relaxed">
+              {ORG.addressLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
             </p>
-            <p className="font-mono text-[11px] text-[#8E9BB5]">
-              Phone: +91 [placeholder]
-            </p>
-            <p className="font-mono text-[11px] text-[#8E9BB5]">
-              Email: contact@[placeholder].org
-            </p>
+            <div className="space-y-1 pt-1">
+              {ORG.phones.map((phone) => (
+                <a
+                  key={phone}
+                  href={`tel:${phone.replace(/\s/g, '')}`}
+                  className="block font-mono text-[11px] text-[#8E9BB5] hover:text-[#E39B2C]"
+                >
+                  {phone}
+                </a>
+              ))}
+            </div>
+            <a
+              href={`mailto:${ORG.email}`}
+              className="block font-mono text-[11px] text-[#8E9BB5] hover:text-[#E39B2C] break-all"
+            >
+              {ORG.email}
+            </a>
             <div className="pt-2">
               <button
                 onClick={() => onNavigate('contact')}
@@ -98,11 +113,6 @@ export const Footer: React.FC<FooterProps> = ({
               </button>
             </li>
             <li>
-              <button onClick={() => onNavigate('research')} className="hover:text-[#E39B2C]">
-                Research & Publications
-              </button>
-            </li>
-            <li>
               <button onClick={() => onNavigate('training')} className="hover:text-[#E39B2C]">
                 Training & Institute
               </button>
@@ -121,10 +131,10 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
       </div>
 
-      {/* Bottom Bar (F2 requirement: Reg. No. [placeholder], 12A & 80G [placeholder], year 2026) */}
+      {/* Bottom bar */}
       <div className="max-w-7xl mx-auto pt-6 hairline-t flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono text-[#8E9BB5] gap-3">
         <div>
-          © 2026 LIFE (I.I.D.C.). Reg. No. [placeholder] · 12A & 80G [placeholder]
+          © 2026 LIFE (I.I.D.C.)
         </div>
         <div>
           Registered Society · Jaipur, Rajasthan

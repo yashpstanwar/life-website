@@ -49,7 +49,7 @@ export const ProgrammeDetailPage: React.FC<ProgrammeDetailPageProps> = ({ progra
             </p>
 
             <p>
-              Working directly alongside local panchayats, frontline health workers, and traditional folk performers, the initiative translates dense bureaucratic documentation into engaging regional audio plays, street theatre enactments, and illustrated visual guides tailored specifically for low-literacy environments [placeholder].
+              Working directly alongside local panchayats, frontline health workers, and traditional folk performers, the initiative translates dense bureaucratic documentation into engaging regional audio plays, street theatre enactments, and illustrated visual guides tailored specifically for low-literacy environments.
             </p>
 
             {/* Pull quote in Fraunces with hairline rules above and below */}
@@ -58,12 +58,12 @@ export const ProgrammeDetailPage: React.FC<ProgrammeDetailPageProps> = ({ progra
                 "Communication is not what is spoken by the institute, but what is understood and acted upon by the last-mile villager."
               </blockquote>
               <cite className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest block not-italic">
-                — Field Director, I.I.D.C. Rajasthan [placeholder]
+                — Field Director, I.I.D.C. Rajasthan
               </cite>
             </div>
 
             <p>
-              Over a multi-stage field deployment, trained volunteer teams visited over 120 remote villages, establishing community listening circles and distributing durable audio playback devices pre-loaded with maternal health modules [placeholder].
+              Over a multi-stage field deployment, trained volunteer teams visited over 120 remote villages, establishing community listening circles and distributing durable audio playback devices pre-loaded with maternal health modules.
             </p>
 
             {/* Inline image with caption */}
@@ -76,12 +76,12 @@ export const ProgrammeDetailPage: React.FC<ProgrammeDetailPageProps> = ({ progra
                 />
               </div>
               <p className="font-mono text-xs text-[#8E9BB5] italic">
-                Fig 1. Community listening circle session in Barmer district [placeholder].
+                Fig 1. Community listening circle session in Barmer district.
               </p>
             </div>
 
             <p>
-              Subsequent impact evaluations conducted three months post-deployment demonstrated a measurable 42% increase in institutional health registrations across participating panchayats [placeholder].
+              Subsequent impact evaluations conducted three months post-deployment demonstrated a measurable 42% increase in institutional health registrations across participating panchayats.
             </p>
 
             {/* Embedded video block simulation */}
@@ -91,7 +91,7 @@ export const ProgrammeDetailPage: React.FC<ProgrammeDetailPageProps> = ({ progra
                   <Play size={28} className="ml-1" />
                 </div>
                 <span className="font-mono text-xs text-[#8E9BB5] mt-4 uppercase tracking-widest">
-                  DOCUMENTARY SHORT FILM (12 MINS) [PLACEHOLDER]
+                  DOCUMENTARY SHORT FILM — COMING SOON
                 </span>
               </div>
               <p className="font-mono text-xs text-[#8E9BB5] italic">
@@ -113,7 +113,7 @@ export const ProgrammeDetailPage: React.FC<ProgrammeDetailPageProps> = ({ progra
                   <MapPin size={16} className="text-[#2C6E8F] mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-[#8E9BB5] block">DISTRICT</span>
-                    <span className="text-[#101C3A] font-bold">{item.district} [placeholder]</span>
+                    <span className="text-[#101C3A] font-bold">{item.district}</span>
                   </div>
                 </div>
 

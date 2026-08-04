@@ -38,7 +38,7 @@ export const DonationBand: React.FC<DonationBandProps> = ({ onNavigate }) => {
       <div className="max-w-[720px] mx-auto text-center space-y-6">
         {/* Heading */}
         <h2 className="font-fraunces text-3xl sm:text-4xl font-bold text-[#EFEDE6]">
-          Give once, or give monthly.
+          Support
         </h2>
 
         {/* One-time / Monthly Segmented Toggle */}
@@ -112,7 +112,7 @@ export const DonationBand: React.FC<DonationBandProps> = ({ onNavigate }) => {
         {/* 13px muted line with lock icon */}
         <div className="flex items-center justify-center space-x-1.5 text-[13px] text-[#8E9BB5] font-mono pt-2">
           <Lock size={13} className="text-[#8E9BB5]" />
-          <span>80G tax exemption available · Payments secured by Razorpay</span>
+          <span>Payments secured by Razorpay</span>
         </div>
       </div>
     </section>

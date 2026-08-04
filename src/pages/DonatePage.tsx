@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { PageId, DonationDetails } from '../types';
-import { PILLARS, DONATION_AMOUNTS_MAP } from '../data';
+import { PILLARS, DONATION_AMOUNTS_MAP, ORG } from '../data';
 import { SignalBars } from '../components/SignalBars';
 import { startDonation, getPaymentConfig, DonationError } from '../lib/payments';
-import { Lock, Copy, CheckCircle2, ShieldCheck, FileCheck, Landmark, Smartphone, CreditCard } from 'lucide-react';
+import { Lock, CheckCircle2, ShieldCheck, FileCheck, Landmark, Smartphone } from 'lucide-react';
 
 interface DonatePageProps {
   initialPreset?: { amount: number; frequency: 'one-time' | 'monthly' };
@@ -584,50 +584,29 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
                 <h4 className="font-mono text-xs uppercase tracking-widest text-[#101C3A]">
                   OTHER WAYS TO GIVE
                 </h4>
-                <div className="space-y-2 font-mono text-[11px] text-[#8E9BB5]">
-                  {/* Bank transfer */}
-                  <div className="flex items-center justify-between p-2 bg-[#EFEDE6] rounded-[4px]">
-                    <div className="flex items-center space-x-1.5">
-                      <Landmark size={14} className="text-[#101C3A]" />
-                      <span>Bank: [placeholder]</span>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard('A/C [placeholder], IFSC [placeholder]', 'bank')}
-                      className="text-[#2C6E8F] hover:underline flex items-center space-x-1"
+                <div className="space-y-3 font-mono text-[11px] text-[#8E9BB5]">
+                  <p className="font-sans-devanagari text-xs leading-relaxed">
+                    Prefer to give by bank transfer, UPI or cheque? Call or write to us and we will
+                    share the account details and issue your receipt directly.
+                  </p>
+                  <div className="space-y-1.5">
+                    {ORG.phones.map((phone) => (
+                      <a
+                        key={phone}
+                        href={`tel:${phone.replace(/\s/g, '')}`}
+                        className="flex items-center space-x-2 p-2 bg-[#EFEDE6] rounded-[4px] text-[#101C3A] hover:text-[#2C6E8F]"
+                      >
+                        <Smartphone size={14} />
+                        <span>{phone}</span>
+                      </a>
+                    ))}
+                    <a
+                      href={`mailto:${ORG.email}`}
+                      className="flex items-center space-x-2 p-2 bg-[#EFEDE6] rounded-[4px] text-[#101C3A] hover:text-[#2C6E8F] break-all"
                     >
-                      <Copy size={12} />
-                      <span>{copiedItem === 'bank' ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-
-                  {/* UPI ID */}
-                  <div className="flex items-center justify-between p-2 bg-[#EFEDE6] rounded-[4px]">
-                    <div className="flex items-center space-x-1.5">
-                      <Smartphone size={14} className="text-[#101C3A]" />
-                      <span>UPI: life@[placeholder]</span>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard('life@[placeholder]', 'upi')}
-                      className="text-[#2C6E8F] hover:underline flex items-center space-x-1"
-                    >
-                      <Copy size={12} />
-                      <span>{copiedItem === 'upi' ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-
-                  {/* Cheque */}
-                  <div className="flex items-center justify-between p-2 bg-[#EFEDE6] rounded-[4px]">
-                    <div className="flex items-center space-x-1.5">
-                      <CreditCard size={14} className="text-[#101C3A]" />
-                      <span>Cheque: I.I.D.C. Jaipur</span>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard('I.I.D.C. Society Jaipur [placeholder]', 'cheque')}
-                      className="text-[#2C6E8F] hover:underline flex items-center space-x-1"
-                    >
-                      <Copy size={12} />
-                      <span>{copiedItem === 'cheque' ? 'Copied' : 'Copy'}</span>
-                    </button>
+                      <Landmark size={14} />
+                      <span>{ORG.email}</span>
+                    </a>
                   </div>
                 </div>
               </div>

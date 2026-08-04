@@ -110,31 +110,16 @@ export const TrainingPage: React.FC<TrainingPageProps> = () => {
           </div>
         </div>
 
-        {/* Faculty Row & Trainee Quote in Fraunces */}
+        {/* Trainee quote */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-t border-b border-[#8E9BB5]/30 py-12">
           
-          {/* Faculty row */}
-          <div className="lg:col-span-6 space-y-4">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5]">
-              INSTITUTE FACULTY & RESOURCE MASTERS
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((f) => (
-                <div key={f} className="p-3 bg-white rounded-[4px] hairline-all">
-                  <span className="font-fraunces font-bold text-sm text-[#101C3A] block">[placeholder Faculty {f}]</span>
-                  <span className="font-mono text-[11px] text-[#8E9BB5] block">Senior Resource Person [placeholder]</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Trainee quote in Fraunces */}
           <div className="lg:col-span-6 bg-[#101C3A] text-[#EFEDE6] p-8 rounded-[4px] space-y-4">
             <blockquote className="font-fraunces text-xl italic text-[#EFEDE6] leading-relaxed">
               "The practical field communication modules changed how our entire volunteer team presents healthcare rights to villagers."
             </blockquote>
             <cite className="font-mono text-xs text-[#E39B2C] uppercase tracking-widest block not-italic">
-              — Master Trainer Participant, Barmer District [placeholder]
+              — Master trainer participant, Barmer district
             </cite>
           </div>
 

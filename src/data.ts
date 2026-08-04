@@ -1,4 +1,4 @@
-import { ProgrammePillar, ProgrammeItem, ResearchPaper, CourseItem } from './types';
+import { ProgrammePillar, ProgrammeItem, CourseItem } from './types';
 
 export const PILLARS: ProgrammePillar[] = [
   {
@@ -62,29 +62,6 @@ export const OBJECTIVES = [
   'All objectives pursued without distinction of colour, class, religion, caste or gender, free of political affiliation and not for profit.'
 ];
 
-export const GOVERNING_BODY = [
-  {
-    name: '[placeholder]',
-    role: 'President & Executive Member',
-    bio: '[placeholder] leading strategic development and field operations.'
-  },
-  {
-    name: '[placeholder]',
-    role: 'Vice President',
-    bio: '[placeholder] advising on research methodology and public policy.'
-  },
-  {
-    name: '[placeholder]',
-    role: 'General Secretary',
-    bio: '[placeholder] managing institute operations and donor relations.'
-  },
-  {
-    name: '[placeholder]',
-    role: 'Treasurer & Academic Advisor',
-    bio: '[placeholder] overseeing institutional audits and field training programmes.'
-  }
-];
-
 export const PROGRAMMES: ProgrammeItem[] = [
   {
     id: 'barmer-maternal-health',
@@ -95,9 +72,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Barmer',
     year: '2025–2026',
     image: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&q=80&w=800',
-    duration: '12 Months [placeholder]',
-    partners: 'District Health Society, Jaipur [placeholder]',
-    reach: '45,000 Beneficiaries [placeholder]'
+    duration: '12 Months',
+    partners: 'District Health Society, Jaipur',
+    reach: '45,000 Beneficiaries'
   },
   {
     id: 'bikaner-literacy-drive',
@@ -108,9 +85,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Bikaner',
     year: '2025',
     image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=800',
-    duration: '8 Months [placeholder]',
-    partners: 'State Education Department [placeholder]',
-    reach: '18,000 Children [placeholder]'
+    duration: '8 Months',
+    partners: 'State Education Department',
+    reach: '18,000 Children'
   },
   {
     id: 'jaipur-field-training',
@@ -121,9 +98,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Jaipur',
     year: '2026',
     image: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=800',
-    duration: '6 Months [placeholder]',
-    partners: 'I.I.D.C. Training Wing [placeholder]',
-    reach: '350 Field Workers [placeholder]'
+    duration: '6 Months',
+    partners: 'I.I.D.C. Training Wing',
+    reach: '350 Field Workers'
   },
   {
     id: 'jaisalmer-water-nutrition',
@@ -134,9 +111,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Jaisalmer',
     year: '2024–2025',
     image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800',
-    duration: '14 Months [placeholder]',
-    partners: 'Rural Development Trust [placeholder]',
-    reach: '60,000 Villagers [placeholder]'
+    duration: '14 Months',
+    partners: 'Rural Development Trust',
+    reach: '60,000 Villagers'
   },
   {
     id: 'udaipur-women-self-reliance',
@@ -147,9 +124,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Udaipur',
     year: '2025',
     image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800',
-    duration: '10 Months [placeholder]',
-    partners: 'Women & Child Development Cell [placeholder]',
-    reach: '12,500 Women [placeholder]'
+    duration: '10 Months',
+    partners: 'Women & Child Development Cell',
+    reach: '12,500 Women'
   },
   {
     id: 'state-impact-eval',
@@ -160,52 +137,9 @@ export const PROGRAMMES: ProgrammeItem[] = [
     district: 'Barmer & Bikaner',
     year: '2025–2026',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=800',
-    duration: '18 Months [placeholder]',
-    partners: 'Independent Evaluation Panel [placeholder]',
-    reach: '120 Sample Villages [placeholder]'
-  }
-];
-
-export const RESEARCH_PAPERS: ResearchPaper[] = [
-  {
-    id: 'res-1',
-    title: 'Baseline Survey on Maternal Health Information Delivery in Desert Districts',
-    type: 'Survey',
-    commissionedBy: 'Health Department, Government of Rajasthan [placeholder]',
-    year: '2025',
-    fileSize: '2.4 MB PDF'
-  },
-  {
-    id: 'res-2',
-    title: 'Impact Study of Community Radio Broadcasts on Rural Literacy Adoption',
-    type: 'Impact study',
-    commissionedBy: 'Autonomous Educational Foundation [placeholder]',
-    year: '2025',
-    fileSize: '4.1 MB PDF'
-  },
-  {
-    id: 'res-3',
-    title: 'Evaluation of Grassroots Volunteer Training Modules in Western Rajasthan',
-    type: 'Evaluation',
-    commissionedBy: 'I.I.D.C. Academic Council [placeholder]',
-    year: '2024',
-    fileSize: '1.8 MB PDF'
-  },
-  {
-    id: 'res-4',
-    title: 'Socio-Economic Survey on Women Self-Help Groups in Tribal Blocks',
-    type: 'Survey',
-    commissionedBy: 'State Rural Livelihoods Mission [placeholder]',
-    year: '2024',
-    fileSize: '3.6 MB PDF'
-  },
-  {
-    id: 'res-5',
-    title: 'Audio-Visual Media Effectiveness in Environmental Awareness Campaigns',
-    type: 'Evaluation',
-    commissionedBy: 'Private Research Trust [placeholder]',
-    year: '2023',
-    fileSize: '2.9 MB PDF'
+    duration: '18 Months',
+    partners: 'Independent Evaluation Panel',
+    reach: '120 Sample Villages'
   }
 ];
 
@@ -213,34 +147,34 @@ export const COURSES: CourseItem[] = [
   {
     id: 'c1',
     title: 'Development Communication & Audio-Visual Media Workshop',
-    duration: '2 Weeks [placeholder]',
-    format: 'In-person / Hands-on [placeholder]',
-    location: 'I.I.D.C. Campus, Jaipur [placeholder]',
-    nextStartDate: '15 September 2026 [placeholder]'
+    duration: '2 Weeks',
+    format: 'In-person / Hands-on',
+    location: 'I.I.D.C. Campus, Jaipur',
+    nextStartDate: '15 September 2026'
   },
   {
     id: 'c2',
     title: 'Field Survey Methodologies & Data Collection for Health Workers',
-    duration: '1 Week [placeholder]',
-    format: 'Field & Classroom [placeholder]',
-    location: 'Barmer Resource Centre [placeholder]',
-    nextStartDate: '01 October 2026 [placeholder]'
+    duration: '1 Week',
+    format: 'Field & Classroom',
+    location: 'Barmer Resource Centre',
+    nextStartDate: '01 October 2026'
   },
   {
     id: 'c3',
     title: 'Master Trainer Certification in Community Outreach',
-    duration: '1 Month [placeholder]',
-    format: 'Residential Intensive [placeholder]',
-    location: 'I.I.D.C. Campus, Jaipur [placeholder]',
-    nextStartDate: '10 November 2026 [placeholder]'
+    duration: '1 Month',
+    format: 'Residential Intensive',
+    location: 'I.I.D.C. Campus, Jaipur',
+    nextStartDate: '10 November 2026'
   },
   {
     id: 'c4',
     title: 'Women Empowerment Facilitation & Self-Help Mobilization',
-    duration: '10 Days [placeholder]',
-    format: 'Interactive Workshop [placeholder]',
-    location: 'Udaipur Centre [placeholder]',
-    nextStartDate: '01 December 2026 [placeholder]'
+    duration: '10 Days',
+    format: 'Interactive Workshop',
+    location: 'Udaipur Centre',
+    nextStartDate: '01 December 2026'
   }
 ];
 
@@ -250,3 +184,36 @@ export const DONATION_AMOUNTS_MAP = {
   2500: '₹2,500 produces one district radio spot',
   5000: '₹5,000 funds a training camp for ten workers'
 };
+
+/**
+ * Organisation details. Single source of truth — the header, footer and
+ * contact page all read from here, so a phone number changes in one place.
+ */
+export const ORG = {
+  brandName: 'LIFE',
+  registeredName: 'Indian Institute of Development and Communication (I.I.D.C.)',
+  shortName: 'LIFE (I.I.D.C.)',
+  addressLines: ['19, Shri Ram Nagar-B, Kanta, Jhotwara', 'Jaipur, Rajasthan 302012'],
+  addressOneLine: '19, Shri Ram Nagar-B, Kanta, Jhotwara, Jaipur, Rajasthan 302012',
+  phones: ['+91 70147 78387', '+91 82332 37530', '+91 63769 18299'],
+  email: 'lifengo.org@gmail.com',
+  city: 'Jaipur',
+  state: 'Rajasthan',
+  mapEmbedUrl:
+    'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d222.30056336610383!2d75.74466634855588!3d26.94126850466042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1785885341761!5m2!1sen!2sin',
+  motto: "Change doesn't arrive on its own. Someone has to carry it.",
+};
+
+export const IMPACT_STATS = [
+  { value: '87', label: 'Villages reached' },
+  { value: '1,758', label: 'People trained' },
+  { value: '22', label: 'Campaigns produced' },
+  { value: '30', label: 'Years of work' },
+];
+
+export const PARTNERS = [
+  'Governor of Rajasthan',
+  'UNICEF Rajasthan',
+  'Jaipur Academic Council',
+  'State Literacy Mission',
+];
