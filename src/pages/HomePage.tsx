@@ -31,50 +31,51 @@ const HeroImage: React.FC = () => {
   }
 
   return (
-    <img
-      src="/hero.jpg"
-      alt="A LIFE field worker sitting with villagers, explaining a government welfare scheme."
-      onError={() => setFailed(true)}
-      className="absolute inset-0 w-full h-full object-cover object-center"
-      loading="eager"
-      fetchPriority="high"
-    />
+    <picture>
+      <source media="(max-width: 640px)" srcSet="/hero-mobile.jpg" />
+      <img
+        src="/hero.jpg"
+        alt="A LIFE field worker standing under a tree, explaining a government welfare scheme to a seated group of villagers."
+        onError={() => setFailed(true)}
+        className="absolute inset-0 w-full h-full object-cover object-[62%_center] sm:object-center"
+        loading="eager"
+        fetchPriority="high"
+      />
+    </picture>
   );
 };
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
   return (
     <div className="w-full bg-[#EFEDE6]">
-      {/* Hero — split: statement left on solid indigo, photograph right */}
-      <section className="relative bg-[#101C3A] text-[#EFEDE6] hairline-b">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] lg:min-h-[560px]">
-          {/* Photograph — first on mobile so the page opens on a face, not a wall of navy */}
-          <div className="relative order-first lg:order-last h-[260px] sm:h-[340px] lg:h-auto overflow-hidden bg-[#16233f]">
-            <HeroImage />
-            {/* Feathered seam so the photo reads as one surface with the text panel */}
-            <div
-              aria-hidden="true"
-              className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#101C3A] to-transparent"
-            />
-            <div
-              aria-hidden="true"
-              className="lg:hidden absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#101C3A] to-transparent"
-            />
-          </div>
+      {/* Hero — full bleed photograph, statement over it */}
+      <section className="relative bg-[#101C3A] text-[#EFEDE6] hairline-b overflow-hidden">
+        <div className="relative min-h-[520px] sm:min-h-[600px] lg:min-h-[calc(100vh-72px)] lg:max-h-[760px] flex items-end">
+          <HeroImage />
 
-          {/* Statement */}
-          <div className="flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-14 sm:py-16 lg:py-20 relative z-10">
-            <div className="mb-8">
+          {/* Two-stop scrim: heavy at the base where the text sits, light at the
+              top so the tree and the speaker's face stay visible. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-[#101C3A] via-[#101C3A]/80 to-[#101C3A]/25"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 hidden lg:block bg-gradient-to-r from-[#101C3A]/75 via-[#101C3A]/20 to-transparent"
+          />
+
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-12 sm:pb-16 lg:pb-20">
+            <div className="mb-7">
               <SignalBars count={12} heightLevel={4} className="h-9" isAnimated={true} />
             </div>
 
-            <h1 className="font-fraunces text-[2rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-[3.4rem] lg:leading-[1.08] font-bold max-w-[15ch] text-[#EFEDE6]">
+            <h1 className="font-fraunces text-[2rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-[3.4rem] lg:leading-[1.08] font-bold max-w-[16ch] text-[#EFEDE6]">
               {language === 'en'
                 ? 'The scheme exists. Knowing about it is what we help with.'
                 : 'योजना मौजूद है। उसकी जानकारी पहुँचाना हमारा काम है।'}
             </h1>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-9">
               <button
                 onClick={() => onNavigate('donate')}
                 className="px-8 py-4 bg-[#E39B2C] text-[#101C3A] font-sans-devanagari font-bold rounded-[4px] hover:bg-[#e09117] transition-colors cursor-pointer"
@@ -83,7 +84,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
               </button>
               <button
                 onClick={() => onNavigate('work')}
-                className="px-8 py-4 bg-transparent text-[#EFEDE6] border border-[#8E9BB5]/40 font-sans-devanagari rounded-[4px] hover:border-[#E39B2C] hover:text-[#E39B2C] transition-colors cursor-pointer"
+                className="px-8 py-4 bg-transparent text-[#EFEDE6] border border-[#EFEDE6]/50 font-sans-devanagari rounded-[4px] hover:border-[#E39B2C] hover:text-[#E39B2C] transition-colors cursor-pointer backdrop-blur-[2px]"
               >
                 {language === 'en' ? 'See our work' : 'हमारा कार्य देखें'}
               </button>
