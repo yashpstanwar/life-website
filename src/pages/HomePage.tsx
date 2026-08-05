@@ -3,53 +3,91 @@ import { PageId, Language } from '../types';
 import { PILLARS, IMPACT_STATS, PARTNERS } from '../data';
 import { DonationBand } from '../components/DonationBand';
 import { SignalBars } from '../components/SignalBars';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Image as ImageIcon } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (page: PageId, donationPreset?: { amount: number; frequency: 'one-time' | 'monthly' }) => void;
   language: Language;
 }
 
+/**
+ * Renders the hero photograph, falling back to a composed placeholder if the
+ * file is missing — so a half-finished deploy never shows a broken image icon.
+ * Drop your own photo at public/hero.jpg and it appears automatically.
+ */
+const HeroImage: React.FC = () => {
+  const [failed, setFailed] = React.useState(false);
+
+  if (failed) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[#54637f] bg-[#16233f]">
+        <ImageIcon size={30} strokeWidth={1.5} aria-hidden="true" />
+        <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-center px-6">
+          Add your field photograph
+          <span className="block mt-1 normal-case tracking-normal text-[#43506a]">public/hero.jpg</span>
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src="/hero.jpg"
+      alt="A LIFE field worker sitting with villagers, explaining a government welfare scheme."
+      onError={() => setFailed(true)}
+      className="absolute inset-0 w-full h-full object-cover object-center"
+      loading="eager"
+      fetchPriority="high"
+    />
+  );
+};
+
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, language }) => {
   return (
     <div className="w-full bg-[#EFEDE6]">
-      {/* Hero Section */}
-      <section className="relative bg-[#101C3A] text-[#EFEDE6] py-24 sm:py-32 px-4 sm:px-8 overflow-hidden hairline-b">
-        {/* Signal Bars graphic */}
-        <div className="max-w-7xl mx-auto flex flex-col items-start relative z-10">
-          <div className="mb-6">
-            <SignalBars count={32} heightLevel={4} className="h-10 opacity-80" isAnimated={true} />
+      {/* Hero — split: statement left on solid indigo, photograph right */}
+      <section className="relative bg-[#101C3A] text-[#EFEDE6] hairline-b">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] lg:min-h-[560px]">
+          {/* Photograph — first on mobile so the page opens on a face, not a wall of navy */}
+          <div className="relative order-first lg:order-last h-[260px] sm:h-[340px] lg:h-auto overflow-hidden bg-[#16233f]">
+            <HeroImage />
+            {/* Feathered seam so the photo reads as one surface with the text panel */}
+            <div
+              aria-hidden="true"
+              className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#101C3A] to-transparent"
+            />
+            <div
+              aria-hidden="true"
+              className="lg:hidden absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#101C3A] to-transparent"
+            />
           </div>
 
-          <p className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5] mb-3">
-            REGISTERED SOCIETY · JAIPUR, RAJASTHAN
-          </p>
+          {/* Statement */}
+          <div className="flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-14 sm:py-16 lg:py-20 relative z-10">
+            <div className="mb-8">
+              <SignalBars count={12} heightLevel={4} className="h-9" isAnimated={true} />
+            </div>
 
-          <h1 className="font-fraunces text-4xl sm:text-6xl font-bold leading-tight max-w-4xl mb-6 text-[#EFEDE6]">
-            {language === 'en'
-              ? 'A scheme nobody hears about helps nobody.'
-              : 'जिस योजना के बारे में कोई नहीं सुनता, वह किसी की मदद नहीं करती।'}
-          </h1>
+            <h1 className="font-fraunces text-[2rem] leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-[3.4rem] lg:leading-[1.08] font-bold max-w-[15ch] text-[#EFEDE6]">
+              {language === 'en'
+                ? 'The scheme exists. Knowing about it is what we help with.'
+                : 'योजना मौजूद है। उसकी जानकारी पहुँचाना हमारा काम है।'}
+            </h1>
 
-          <p className="font-sans-devanagari text-lg text-[#8E9BB5] max-w-2xl mb-8 leading-relaxed">
-            {language === 'en'
-              ? 'LIFE builds the campaigns, research and training that carry development work the last mile — across Rajasthan and beyond.'
-              : 'लाइफ (LIFE) राजस्थान और उससे आगे विकास कार्यों को अंतिम मील तक ले जाने वाले अभियान, अनुसंधान और प्रशिक्षण का निर्माण करता है।'}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={() => onNavigate('donate')}
-              className="px-8 py-3.5 bg-[#E39B2C] text-[#101C3A] font-sans-devanagari font-bold rounded-[4px] hover:bg-[#e09117] transition-colors cursor-pointer"
-            >
-              {language === 'en' ? 'Donate' : 'दान करें'}
-            </button>
-            <button
-              onClick={() => onNavigate('work')}
-              className="px-8 py-3.5 bg-transparent text-[#EFEDE6] border border-[#8E9BB5]/40 font-sans-devanagari rounded-[4px] hover:border-[#E39B2C] hover:text-[#E39B2C] transition-colors cursor-pointer"
-            >
-              {language === 'en' ? 'See our work' : 'हमारा कार्य देखें'}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-10">
+              <button
+                onClick={() => onNavigate('donate')}
+                className="px-8 py-4 bg-[#E39B2C] text-[#101C3A] font-sans-devanagari font-bold rounded-[4px] hover:bg-[#e09117] transition-colors cursor-pointer"
+              >
+                {language === 'en' ? 'Support our work' : 'हमारा सहयोग करें'}
+              </button>
+              <button
+                onClick={() => onNavigate('work')}
+                className="px-8 py-4 bg-transparent text-[#EFEDE6] border border-[#8E9BB5]/40 font-sans-devanagari rounded-[4px] hover:border-[#E39B2C] hover:text-[#E39B2C] transition-colors cursor-pointer"
+              >
+                {language === 'en' ? 'See our work' : 'हमारा कार्य देखें'}
+              </button>
+            </div>
           </div>
         </div>
       </section>
