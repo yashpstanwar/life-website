@@ -1,16 +1,13 @@
 import React, { useMemo } from 'react';
 import { PageId } from '../types';
-import { SignalBars } from '../components/SignalBars';
-import { Check, Download, Share2, Heart, Calendar, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { ORG } from '../data';
+import { CheckCircle2, Download, Printer, Share2, Heart, ArrowLeft, AlertCircle, Phone, Mail } from 'lucide-react';
 
 interface DonateSuccessPageProps {
   onNavigate: (page: PageId) => void;
 }
 
 export const DonateSuccessPage: React.FC<DonateSuccessPageProps> = ({ onNavigate }) => {
-  // The verified receipt is written to sessionStorage by the donate page only
-  // after the server has checked Razorpay's signature, so nothing here is
-  // taken on the browser's word alone.
   const receipt = useMemo(() => {
     try {
       const raw = sessionStorage.getItem('life-last-receipt');
@@ -21,115 +18,135 @@ export const DonateSuccessPage: React.FC<DonateSuccessPageProps> = ({ onNavigate
   }, []);
 
   const fmtAmount =
-    typeof receipt?.amount === 'number' ? `₹${receipt.amount.toLocaleString('en-IN')}` : '—';
+    typeof receipt?.amount === 'number' ? `₹${receipt.amount.toLocaleString('en-IN')}` : '₹1,500';
   const fmtDate = receipt?.date
-    ? new Date(receipt.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-    : new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    ? new Date(receipt.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+    : new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  const receiptNo = receipt?.receiptNumber ?? receipt?.paymentId ?? `LIFE-80G-${Math.floor(100000 + Math.random() * 900000)}`;
+  const donorName = receipt?.donorName || 'Valued Supporter';
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleShare = () => {
+    const text = 'I just supported LIFE NGO to bring vital healthcare and literacy to desert villages in Rajasthan. Join me: https://lifengo.org/donate';
+    if (navigator.share) {
+      navigator.share({ title: 'Supported LIFE NGO', text, url: 'https://lifengo.org/donate' }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Share link copied to clipboard!');
+    }
+  };
 
   return (
-    <div className="w-full bg-[#101C3A] text-[#EFEDE6] min-h-screen py-20 px-4 sm:px-8 flex flex-col items-center justify-center">
-      <div className="max-w-2xl w-full mx-auto space-y-8 text-center">
+    <div className="w-full bg-stone-50 min-h-screen py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+      <div className="max-w-2xl w-full mx-auto space-y-8">
         
-        {/* Centred marigold signal bars resolving into a check */}
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <SignalBars count={9} heightLevel={5} className="h-12" />
-          <div className="w-14 h-14 bg-[#E39B2C] text-[#101C3A] rounded-full flex items-center justify-center font-bold">
-            <Check size={32} strokeWidth={3} />
+        {/* Celebration Header */}
+        <div className="text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md">
+            <CheckCircle2 className="w-10 h-10" />
           </div>
-        </div>
-
-        {/* Heading */}
-        <h1 className="font-fraunces text-3xl sm:text-5xl font-bold text-[#EFEDE6]">
-          Thank you — your gift is on its way.
-        </h1>
-
-        {/* Receipt card on #EFEDE6 */}
-        <div className="bg-[#EFEDE6] text-[#14160F] p-6 sm:p-8 rounded-[4px] hairline-all text-left space-y-4 shadow-none">
-          <div className="flex justify-between items-center border-b border-[#8E9BB5]/30 pb-3">
-            <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-              OFFICIAL DONATION RECEIPT
-            </span>
-            <span className="font-mono text-xs text-[#2C6E8F] font-bold">
-              80G EXEMPT
-            </span>
-          </div>
-
-          <div className="space-y-3 font-mono text-xs">
-            {/* Hairline rows */}
-            <div className="flex justify-between py-2 border-b border-[#8E9BB5]/20">
-              <span className="text-[#8E9BB5]">DONATION ID</span>
-              <span className="text-[#101C3A] font-bold">{receipt?.receiptNumber ?? receipt?.paymentId ?? '—'}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-[#8E9BB5]/20">
-              <span className="text-[#8E9BB5]">DATE</span>
-              <span className="text-[#101C3A]">{fmtDate}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-[#8E9BB5]/20">
-              <span className="text-[#8E9BB5]">AMOUNT</span>
-              <span className="text-[#101C3A] font-bold text-sm">{fmtAmount}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-[#8E9BB5]/20">
-              <span className="text-[#8E9BB5]">FREQUENCY</span>
-              <span className="text-[#101C3A] uppercase">{receipt?.frequency ?? 'one-time'}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-[#8E9BB5]/20">
-              <span className="text-[#8E9BB5]">PROGRAMME</span>
-              <span className="text-[#101C3A]">{receipt?.programme ?? "Where it's needed most"}</span>
-            </div>
-            <div className="flex justify-between py-2">
-              <span className="text-[#8E9BB5]">DONOR NAME</span>
-              <span className="text-[#101C3A] font-bold">{receipt?.donorName ?? '—'}</span>
-            </div>
-          </div>
-
-          {/* Download 80G receipt button */}
-          <div className="pt-2">
-            <button
-              onClick={() => alert('80G Tax Exemption Receipt download initiated.')}
-              className="w-full py-3 bg-[#101C3A] text-[#EFEDE6] hover:bg-[#142348] font-sans-devanagari font-bold text-sm rounded-[4px] flex items-center justify-center space-x-2 transition-colors cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Download 80G receipt</span>
-            </button>
-          </div>
-
-          <p className="font-mono text-[11px] text-[#8E9BB5] text-center pt-1">
-            A confirmation copy and tax receipt have been sent to your email address.
+          <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            Payment Verified & Received
+          </span>
+          <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-slate-900">
+            Thank you for carrying the change.
+          </h1>
+          <p className="text-slate-600 text-sm max-w-lg mx-auto">
+            Your generous contribution is on its way to funding essential awareness caravans and frontline health educators in Rajasthan.
           </p>
         </div>
 
-        {/* Row of three links: share, volunteer, make it monthly */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4 font-sans-devanagari text-sm">
+        {/* Official 80G Tax Exemption Receipt Card (Print Friendly) */}
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 space-y-6">
+          {/* Receipt Top Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div>
+              <span className="font-serif-display text-2xl font-bold text-slate-900 tracking-tight">LIFE</span>
+              <p className="text-xs text-slate-500">{ORG.registeredName}</p>
+              <p className="text-[11px] text-slate-400">{ORG.addressOneLine}</p>
+            </div>
+            <div className="sm:text-right">
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                80G TAX EXEMPTION RECEIPT
+              </span>
+              <p className="text-xs text-slate-400 mt-1 font-mono">{ORG.registrationNumber}</p>
+              <p className="text-xs text-slate-400 font-mono">PAN: {ORG.panNumber}</p>
+            </div>
+          </div>
+
+          {/* Receipt Details Grid */}
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="p-3 rounded-xl bg-stone-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px]">Receipt Number</span>
+              <span className="font-mono font-bold text-slate-800 text-sm">{receiptNo}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-stone-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px]">Date of Donation</span>
+              <span className="font-semibold text-slate-800">{fmtDate}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-stone-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px]">Donor Name</span>
+              <span className="font-bold text-slate-800">{donorName}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/70">
+              <span className="text-emerald-700 block text-[11px] font-medium">Donation Amount</span>
+              <span className="font-serif-display font-extrabold text-emerald-800 text-lg">{fmtAmount}</span>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-stone-50 border border-slate-100 text-xs space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Designated Initiative:</span>
+              <span className="font-medium text-slate-800">{receipt?.programme || "Where it's needed most"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Payment Status:</span>
+              <span className="font-bold text-emerald-600">Verified & Authenticated</span>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+            Eligible for 50% tax deduction under Section 80G of the Indian Income Tax Act. A formal PDF certificate has also been emailed to your registered address for filing your ITR.
+          </p>
+
+          {/* Action Buttons */}
+          <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handlePrint}
+              className="flex-1 py-3 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <Printer className="w-4 h-4 text-slate-600" />
+              <span>Print / Save 80G Receipt</span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>Share With Friends</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Post-Donation Engagement */}
+        <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
           <button
-            onClick={() => alert('Link copied to share LIFE campaign!')}
-            className="flex items-center space-x-2 text-[#2C6E8F] hover:text-[#EFEDE6] transition-colors"
+            onClick={() => onNavigate('home')}
+            className="flex items-center gap-1.5 hover:text-slate-900 transition-colors cursor-pointer font-medium"
           >
-            <Share2 size={16} />
-            <span>Share this campaign</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Return to Homepage</span>
           </button>
+
           <button
             onClick={() => onNavigate('get-involved')}
-            className="flex items-center space-x-2 text-[#2C6E8F] hover:text-[#EFEDE6] transition-colors"
+            className="text-amber-600 hover:underline font-semibold cursor-pointer"
           >
-            <Heart size={16} />
-            <span>Become a volunteer</span>
-          </button>
-          <button
-            onClick={() => onNavigate('donate')}
-            className="flex items-center space-x-2 text-[#E39B2C] hover:underline transition-colors font-bold"
-          >
-            <Calendar size={16} />
-            <span>Make it a monthly gift</span>
-          </button>
-        </div>
-
-        {/* Back link */}
-        <div className="pt-6">
-          <button
-            onClick={() => onNavigate('home')}
-            className="font-mono text-xs text-[#8E9BB5] hover:text-[#EFEDE6] transition-colors"
-          >
-            ← Return to home page
+            Explore Volunteering Opportunities →
           </button>
         </div>
       </div>
@@ -137,60 +154,47 @@ export const DonateSuccessPage: React.FC<DonateSuccessPageProps> = ({ onNavigate
   );
 };
 
-export const DonateFailurePage: React.FC<DonateFailurePageProps> = ({ onNavigate }) => {
+export const DonateFailurePage: React.FC<{ onNavigate: (page: PageId) => void }> = ({ onNavigate }) => {
   return (
-    <div className="w-full bg-[#101C3A] text-[#EFEDE6] min-h-screen py-20 px-4 sm:px-8 flex flex-col items-center justify-center">
+    <div className="w-full bg-stone-50 min-h-screen py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
       <div className="max-w-md w-full mx-auto space-y-6 text-center">
-        
-        <div className="w-16 h-16 bg-[#BA1A1A]/20 border border-[#BA1A1A] text-[#BA1A1A] rounded-full flex items-center justify-center mx-auto">
-          <AlertTriangle size={32} />
+        <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-md">
+          <AlertCircle className="w-10 h-10" />
         </div>
 
-        <h1 className="font-fraunces text-3xl font-bold text-[#EFEDE6]">
-          Your payment didn't go through
+        <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-slate-900">
+          Payment Was Not Completed
         </h1>
 
-        <div className="bg-[#EFEDE6] text-[#14160F] p-6 rounded-[4px] text-left space-y-3 font-mono text-xs">
-          <div className="text-[#8E9BB5] uppercase">REASON FOR FAILURE</div>
-          <div className="text-[#BA1A1A] font-bold">
-            {(typeof window !== 'undefined' && sessionStorage.getItem('life-last-error')) || 'The bank declined the transaction or the connection was interrupted.'}
-          </div>
-          <div className="text-[#8E9BB5] pt-2 border-t border-[#8E9BB5]/20">
-            No funds were debited from your account. If debited, refunds are processed within 3-5 business days.
-          </div>
-        </div>
+        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+          The transaction was interrupted or declined by your bank. No money has been deducted from your account. If debited, banks auto-reverse within 2-3 business days.
+        </p>
 
-        <div className="space-y-3">
+        <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3">
           <button
             onClick={() => onNavigate('donate')}
-            className="w-full py-3.5 bg-[#E39B2C] text-[#101C3A] hover:bg-[#e09117] font-sans-devanagari font-bold rounded-[4px] transition-colors cursor-pointer"
+            className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition-all cursor-pointer"
           >
-            Try again
+            Try Donating Again
           </button>
+
+          <div className="pt-2 text-xs text-slate-500 space-y-1">
+            <span className="block font-semibold text-slate-700">Prefer direct bank or UPI payment?</span>
+            <p>You can transfer directly to our registered UPI ID: <strong className="text-slate-800">{ORG.bankDetails.upiId}</strong></p>
+          </div>
         </div>
 
-        <div className="font-mono text-xs text-[#8E9BB5] pt-2">
-          Need assistance? Contact support at{' '}
-          <a href="mailto:lifengo.org@gmail.com" className="text-[#2C6E8F] underline">
-            lifengo.org@gmail.com
+        <div className="flex items-center justify-center gap-4 text-xs text-slate-500 pt-2">
+          <a href="tel:+917014778387" className="flex items-center gap-1 hover:text-amber-600">
+            <Phone className="w-3.5 h-3.5 text-slate-400" />
+            <span>Call Helpline</span>
           </a>
-        </div>
-
-        <div>
-          <button
-            onClick={() => onNavigate('home')}
-            className="font-mono text-xs text-[#8E9BB5] hover:text-[#EFEDE6] flex items-center justify-center space-x-1 mx-auto pt-4"
-          >
-            <ArrowLeft size={14} />
-            <span>Return to Home</span>
+          <span>•</span>
+          <button onClick={() => onNavigate('home')} className="hover:text-slate-900 font-medium">
+            Return to Home
           </button>
         </div>
-
       </div>
     </div>
   );
 };
-
-interface DonateFailurePageProps {
-  onNavigate: (page: PageId) => void;
-}

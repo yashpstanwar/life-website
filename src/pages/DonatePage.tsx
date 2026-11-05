@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { PageId, DonationDetails } from '../types';
-import { PILLARS, DONATION_AMOUNTS_MAP, ORG } from '../data';
-import { SignalBars } from '../components/SignalBars';
+import { PageId, DonationDetails, Language } from '../types';
+import { DONATION_TIERS, PILLARS, ORG, FAQS } from '../data';
 import { startDonation, getPaymentConfig, DonationError } from '../lib/payments';
-import { Lock, CheckCircle2, ShieldCheck, FileCheck, Landmark, Smartphone } from 'lucide-react';
+import {
+  Heart,
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
+  Landmark,
+  Smartphone,
+  Copy,
+  Check,
+  HelpCircle,
+  Sparkles,
+  ChevronDown,
+  Info,
+  ArrowRight
+} from 'lucide-react';
 
 interface DonatePageProps {
   initialPreset?: { amount: number; frequency: 'one-time' | 'monthly' };
   onNavigate: (page: PageId) => void;
+  language?: Language;
 }
 
-export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigate }) => {
+export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigate, language = 'en' }) => {
   const [details, setDetails] = useState<DonationDetails>({
-    amount: initialPreset?.amount || 1000,
+    amount: initialPreset?.amount || 1500,
     customAmount: '',
     frequency: initialPreset?.frequency || 'one-time',
-    programme: "Where it's needed most",
+    programme: "Where it's needed most (Desert caravans & health literacy)",
     addFeeCoverage: false,
     fullName: '',
     email: '',
@@ -31,22 +45,23 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
   });
 
   const [selectedChip, setSelectedChip] = useState<number | 'Other'>(
-    initialPreset?.amount && [500, 1000, 2500, 5000].includes(initialPreset.amount)
+    initialPreset?.amount && [500, 1500, 3000, 7500, 15000].includes(initialPreset.amount)
       ? initialPreset.amount
-      : 1000
+      : 1500
   );
 
-  // States for D4 testing & Razorpay flow
   const [panError, setPanError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [paymentsEnabled, setPaymentsEnabled] = useState<boolean | null>(null);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
-  // Computed total donation amount
+  // Computed amounts
   const baseAmount = selectedChip === 'Other' ? (parseInt(details.customAmount) || 0) : selectedChip;
   const finalAmount = details.addFeeCoverage ? Math.round(baseAmount * 1.02) : baseAmount;
+  const estimatedTaxSaving = Math.round(finalAmount * 0.5); // Section 80G provides 50% deduction
 
   const handleChipSelect = (chip: number | 'Other') => {
     setSelectedChip(chip);
@@ -73,11 +88,11 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
 
     const pan = details.pan.trim().toUpperCase();
     if (pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
-      setPanError('Enter a valid 10-character PAN');
+      setPanError('Please enter a valid 10-character PAN (e.g. ABCDE1234F)');
       return;
     }
     if (!pan && finalAmount >= 2000) {
-      setPanError('PAN is required to issue an 80G receipt for gifts of ₹2,000 and above');
+      setPanError('PAN is required by Income Tax Dept for 80G tax exemption on gifts of ₹2,000 and above');
       return;
     }
 
@@ -104,7 +119,6 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
       onNavigate('donate-success');
     } catch (err) {
       const e = err as DonationError;
-      // A cancelled modal is the donor changing their mind, not an error to shout about.
       if (e.code === 'cancelled') {
         setFormError(null);
       } else if (e.code === 'validation_failed') {
@@ -115,7 +129,7 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
         sessionStorage.setItem('life-last-error', e.message);
         onNavigate('donate-failure');
       } else {
-        setFormError(e.message || 'Something went wrong. Please try again.');
+        setFormError(e.message || 'Payment gateway connection error. You can also donate directly via UPI / NEFT below.');
       }
     } finally {
       setIsSubmitting(false);
@@ -128,495 +142,595 @@ export const DonatePage: React.FC<DonatePageProps> = ({ initialPreset, onNavigat
     setTimeout(() => setCopiedItem(null), 2000);
   };
 
+  const getImpactDescription = (amount: number) => {
+    if (amount < 1000) {
+      return `Supplies ${Math.max(10, Math.floor(amount / 20))} rural children with printed Devanagari story toolkits.`;
+    }
+    if (amount < 2500) {
+      return `Sponsors 1 complete mobile audio-drama caravan session on maternal health reaching 250+ desert villagers.`;
+    }
+    if (amount < 5000) {
+      return `Equips ${Math.floor(amount / 1000)} village frontline health workers with audio demonstration kits and handbooks.`;
+    }
+    if (amount < 10000) {
+      return `Funds production and regional broadcast of an audio health campaign spot reaching 15,000+ households.`;
+    }
+    return `Fully sponsors a 10-day women's self-reliance legal workshop or deep desert vaccination mobilization drive.`;
+  };
+
   const indianStates = [
     'Rajasthan', 'Delhi', 'Maharashtra', 'Gujarat', 'Haryana',
     'Punjab', 'Uttar Pradesh', 'Madhya Pradesh', 'Karnataka', 'Tamil Nadu',
     'West Bengal', 'Bihar', 'Other State'
   ];
 
+  const donationFaqs = FAQS.filter((f) => f.category === 'tax80g' || f.category === 'donation');
+
   return (
-    <div className={`w-full bg-[#EFEDE6] text-[#14160F] `}>
-      {/* Blocking overlay while the order is created and checkout opens */}
+    <div className="w-full bg-stone-50 text-slate-900 pb-24">
+      {/* Submitting Loading Overlay */}
       {isSubmitting && (
-        <div className="fixed inset-0 z-50 bg-[#101C3A] text-[#EFEDE6] flex flex-col items-center justify-center space-y-6 px-4">
-          <SignalBars count={12} heightLevel={4} className="h-16" isAnimated={true} />
-          <h2 className="font-fraunces text-2xl sm:text-3xl font-bold text-center">
-            Confirming with Razorpay
-          </h2>
-          <p className="font-mono text-xs text-[#8E9BB5] tracking-widest uppercase">
-            SECURE ENCRYPTED TRANSACTION IN PROGRESS...
-          </p>
+        <div className="fixed inset-0 z-50 bg-slate-950/90 text-white flex flex-col items-center justify-center p-4 backdrop-blur-md">
+          <div className="w-16 h-16 rounded-full border-4 border-amber-400 border-t-transparent animate-spin mb-4" />
+          <h2 className="font-serif-display text-2xl font-bold">Connecting Secure Checkout</h2>
+          <p className="text-slate-400 text-xs mt-1">256-Bit SSL Encrypted Banking Connection...</p>
         </div>
       )}
 
-      {/* D1: Header Band on #101C3A, 240px */}
-      <section className="bg-[#101C3A] text-[#EFEDE6] h-[240px] flex items-center px-4 sm:px-8 hairline-b">
-        <div className="max-w-7xl mx-auto w-full space-y-2">
-          <span className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest">
-            SUPPORT LIFE
-          </span>
-          <h1 className="font-fraunces text-3xl sm:text-5xl font-bold text-[#EFEDE6]">
-            Your gift funds the last mile.
-          </h1>
+      {/* Hero Header */}
+      <section className="bg-slate-950 text-white py-14 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Section 80G Tax Exemption Guarantee</span>
+            </div>
+            <h1 className="font-serif-display text-3xl sm:text-5xl font-bold tracking-tight text-white">
+              Support Grassroots Change
+            </h1>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Your gift carries life-saving healthcare, literacy, and self-reliance to Rajasthan's most isolated desert communities.
+            </p>
+          </div>
+
+          <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-xs space-y-1 self-start md:self-end">
+            <span className="text-slate-400 block">Registration Credentials:</span>
+            <span className="text-amber-400 font-semibold block">{ORG.registrationNumber}</span>
+            <span className="text-emerald-400 block font-medium">100% Tax Deductible under 80G</span>
+          </div>
         </div>
       </section>
 
-      {/* Main Page Layout: Left 8 Cols (Form) + Right 4 Cols (Summary Panel) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      {/* Main Donation Container */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Mobile top summary bar (collapsing right panel on mobile) */}
-          <div className="lg:hidden bg-white hairline-all p-4 rounded-[4px] space-y-2">
-            <div className="flex justify-between items-baseline">
-              <span className="font-fraunces text-2xl font-bold text-[#101C3A]">
-                ₹{finalAmount.toLocaleString('en-IN')}
-              </span>
-              <span className="font-mono text-xs text-[#8E9BB5] uppercase">
-                {details.frequency} · {details.programme}
-              </span>
-            </div>
-          </div>
-
-          {/* Left 8 Columns: Form Steps (D1 + D2) */}
-          <div className="lg:col-span-8 space-y-10">
+          {/* Left Column: Interactive Funnel Form (8 Cols) */}
+          <div className="lg:col-span-8 space-y-8">
             
-            {/* STEP 01 — YOUR GIFT */}
-            <div className="space-y-6">
-              <div className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest border-b border-[#8E9BB5]/20 pb-2">
-                STEP 01 — YOUR GIFT
+            {/* STEP 1: CHOOSE FREQUENCY & AMOUNT */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-bold text-sm flex items-center justify-center">
+                    1
+                  </span>
+                  <div>
+                    <h3 className="font-serif-display text-lg font-bold text-slate-900">
+                      Choose Your Contribution
+                    </h3>
+                    <p className="text-xs text-slate-500">Select one-time or monthly sustained support</p>
+                  </div>
+                </div>
+
+                <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setDetails((prev) => ({ ...prev, frequency: 'one-time' }))}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      details.frequency === 'one-time'
+                        ? 'bg-amber-500 text-slate-950 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    One-Time
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDetails((prev) => ({ ...prev, frequency: 'monthly' }))}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                      details.frequency === 'monthly'
+                        ? 'bg-amber-500 text-slate-950 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>Monthly</span>
+                    <span className="text-[9px] px-1 rounded-sm bg-emerald-500 text-white font-bold">3x</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Frequency Toggle */}
-              <div className="inline-flex bg-[#14160F] p-1 rounded-[4px] border border-[#8E9BB5]/30">
-                <button
-                  type="button"
-                  onClick={() => setDetails((prev) => ({ ...prev, frequency: 'one-time' }))}
-                  className={`px-6 py-2 rounded-[4px] font-mono text-xs font-semibold tracking-wider transition-all ${
-                    details.frequency === 'one-time'
-                      ? 'bg-[#E39B2C] text-[#101C3A]'
-                      : 'text-[#8E9BB5] hover:text-[#EFEDE6]'
-                  }`}
-                >
-                  ONE-TIME
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDetails((prev) => ({ ...prev, frequency: 'monthly' }))}
-                  className={`px-6 py-2 rounded-[4px] font-mono text-xs font-semibold tracking-wider transition-all ${
-                    details.frequency === 'monthly'
-                      ? 'bg-[#E39B2C] text-[#101C3A]'
-                      : 'text-[#8E9BB5] hover:text-[#EFEDE6]'
-                  }`}
-                >
-                  MONTHLY
-                </button>
-              </div>
-
-              {/* Amount Chips */}
-              <div className="flex flex-wrap gap-2">
-                {([500, 1000, 2500, 5000, 'Other'] as const).map((chip) => {
-                  const isSelected = selectedChip === chip;
+              {/* Amount Grid Chips */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {[500, 1500, 3000, 7500, 15000].map((amt) => {
+                  const isSelected = selectedChip === amt;
                   return (
                     <button
-                      key={chip}
+                      key={amt}
                       type="button"
-                      onClick={() => handleChipSelect(chip)}
-                      className={`px-5 py-2.5 rounded-[4px] font-mono text-xs font-semibold border transition-all ${
+                      onClick={() => handleChipSelect(amt)}
+                      className={`p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-[#E39B2C] text-[#101C3A] border-[#E39B2C]'
-                          : 'bg-white text-[#14160F] border-[#8E9BB5]/40 hover:border-[#E39B2C]'
+                          ? 'bg-amber-50 border-amber-500 text-amber-950 ring-2 ring-amber-400/30 font-bold shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                       }`}
                     >
-                      {typeof chip === 'number' ? `₹${chip.toLocaleString('en-IN')}` : 'Other'}
+                      <span className="block text-base sm:text-lg font-bold">
+                        ₹{amt.toLocaleString('en-IN')}
+                      </span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Custom amount field when Other active */}
-              {selectedChip === 'Other' && (
-                <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">ENTER CUSTOM AMOUNT</label>
-                  <div className="relative max-w-xs">
-                    <span className="absolute left-3 top-2.5 font-mono text-sm text-[#8E9BB5]">₹</span>
+              {/* Custom Amount Option */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => handleChipSelect('Other')}
+                  className={`text-xs font-semibold cursor-pointer underline ${
+                    selectedChip === 'Other' ? 'text-amber-600 font-bold' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  Enter custom amount
+                </button>
+
+                {selectedChip === 'Other' && (
+                  <div className="mt-2 relative max-w-xs">
+                    <span className="absolute left-3 top-2.5 text-slate-500 font-bold text-sm">₹</span>
                     <input
                       type="number"
+                      min={100}
+                      placeholder="e.g. 5000"
                       value={details.customAmount}
                       onChange={(e) => setDetails((prev) => ({ ...prev, customAmount: e.target.value }))}
-                      placeholder="e.g. 1500"
-                      className="w-full pl-8 pr-4 py-2 bg-white border border-[#8E9BB5]/40 rounded-[4px] font-mono text-sm focus-marigold"
+                      className="w-full pl-8 pr-4 py-2 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-hidden focus:border-amber-500"
                     />
                   </div>
-                </div>
-              )}
-
-              {/* Add 2% checkbox */}
-              <label className="flex items-center space-x-3 cursor-pointer pt-2">
-                <input
-                  type="checkbox"
-                  checked={details.addFeeCoverage}
-                  onChange={(e) => setDetails((prev) => ({ ...prev, addFeeCoverage: e.target.checked }))}
-                  className="rounded-[2px] border-[#8E9BB5] text-[#E39B2C] focus-marigold"
-                />
-                <span className="font-sans-devanagari text-sm text-[#14160F]">
-                  Add 2% so LIFE receives your full gift after payment fees
-                </span>
-              </label>
-
-              {/* Programme Dropdown */}
-              <div className="space-y-1 pt-2">
-                <label className="block font-mono text-xs text-[#8E9BB5] uppercase">Direct my gift to</label>
-                <select
-                  value={details.programme}
-                  onChange={(e) => setDetails((prev) => ({ ...prev, programme: e.target.value }))}
-                  className="w-full max-w-md bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
-                >
-                  <option value="Where it's needed most">Where it's needed most</option>
-                  {PILLARS.map((p) => (
-                    <option key={p.id} value={p.title}>{p.title}</option>
-                  ))}
-                </select>
+                )}
               </div>
 
-              <div className="hairline-b pt-4" />
+              {/* Interactive Impact Statement Banner */}
+              <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-amber-900 uppercase tracking-wide">
+                    Grassroots Outcome of ₹{baseAmount.toLocaleString('en-IN')} {details.frequency === 'monthly' ? '/ month' : ''}:
+                  </span>
+                  <p className="text-slate-800 text-sm leading-relaxed">
+                    {getImpactDescription(baseAmount)}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* STEP 02 — YOUR DETAILS (D2) */}
-            <div className="space-y-6">
-              <div className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest border-b border-[#8E9BB5]/20 pb-2">
-                STEP 02 — YOUR DETAILS
+            {/* STEP 2: DESIGNATE PROGRAMME */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-bold text-sm flex items-center justify-center">
+                  2
+                </span>
+                <div>
+                  <h3 className="font-serif-display text-lg font-bold text-slate-900">
+                    Designate Your Gift
+                  </h3>
+                  <p className="text-xs text-slate-500">Choose where your contribution creates impact</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Full name */}
-                <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">FULL NAME *</label>
-                  <input
-                    type="text"
-                    value={details.fullName}
-                    onChange={(e) => setDetails((prev) => ({ ...prev, fullName: e.target.value }))}
-                    placeholder="Enter full name"
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
-                  />
-                </div>
+              <select
+                value={details.programme}
+                onChange={(e) => setDetails((prev) => ({ ...prev, programme: e.target.value }))}
+                className="w-full p-3 rounded-xl border border-slate-300 text-sm bg-white font-medium focus:outline-hidden focus:border-amber-500"
+              >
+                <option value="Where it's needed most (Desert caravans & health literacy)">
+                  Where it's needed most (Desert caravans & urgent health literacy)
+                </option>
+                <option value="Maternal & Child Health in Barmer">
+                  Maternal & Child Health in Barmer (Health & Social Reform)
+                </option>
+                <option value="Grassroots Literacy & Education in Bikaner">
+                  Grassroots Literacy & Education in Bikaner (Education & Literacy)
+                </option>
+                <option value="Women Self-Reliance in Udaipur">
+                  Women Self-Reliance & Forest Rights in Udaipur (Women's Empowerment)
+                </option>
+                <option value="Master Trainer Academy in Jaipur">
+                  Master Trainer Certification Academy (Jaipur Campus)
+                </option>
+                <option value="Water Conservation & Nutrition Caravans in Jaisalmer">
+                  Water Conservation & Nutrition Caravans in Jaisalmer
+                </option>
+              </select>
+            </div>
 
-                {/* Email */}
-                <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">EMAIL ADDRESS *</label>
-                  <input
-                    type="email"
-                    value={details.email}
-                    onChange={(e) => setDetails((prev) => ({ ...prev, email: e.target.value }))}
-                    placeholder="name@example.com"
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
-                  />
-                </div>
-
-                {/* Mobile (+91 prefix) */}
-                <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">MOBILE NUMBER *</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 font-mono text-sm text-[#8E9BB5]">+91</span>
-                    <input
-                      type="tel"
-                      value={details.mobile}
-                      onChange={(e) => setDetails((prev) => ({ ...prev, mobile: e.target.value }))}
-                      placeholder="9876543210"
-                      className="w-full pl-12 pr-3 py-2 bg-white border border-[#8E9BB5]/40 rounded-[4px] font-mono text-sm focus-marigold"
-                    />
+            {/* STEP 3: DONOR DETAILS & 80G TAX EXEMPTION */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-bold text-sm flex items-center justify-center">
+                    3
+                  </span>
+                  <div>
+                    <h3 className="font-serif-display text-lg font-bold text-slate-900">
+                      Donor Details & 80G Tax Exemption
+                    </h3>
+                    <p className="text-xs text-slate-500">Mandatory for issuance of Form 10BD / 80G tax certificate</p>
                   </div>
                 </div>
 
-                {/* PAN field (with helper text & D4 error state option) */}
+                <span className="hidden sm:inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full font-semibold border border-emerald-200">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  50% Tax Exemption
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">PAN NUMBER</label>
+                  <label className="block text-xs font-semibold text-slate-700">Full Name *</label>
                   <input
                     type="text"
-                    value={details.pan}
-                    onChange={(e) => {
-                      setDetails((prev) => ({ ...prev, pan: e.target.value.toUpperCase() }));
-                      if (panError) setPanError(null);
-                    }}
-                    placeholder="ABCDE1234F"
-                    className={`w-full bg-white border rounded-[4px] px-3 py-2 font-mono text-sm focus-marigold ${
-                      panError
-                        ? 'border-[#BA1A1A] text-[#BA1A1A]'
-                        : 'border-[#8E9BB5]/40'
-                    }`}
+                    required
+                    placeholder="e.g. Ramesh Chandra Sharma"
+                    value={details.fullName}
+                    onChange={(e) => setDetails((prev) => ({ ...prev, fullName: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:border-amber-500"
                   />
-                  {(panError) ? (
-                    <p className="font-mono text-xs text-[#BA1A1A] pt-0.5">
-                      Enter a valid 10-character PAN
-                    </p>
-                  ) : (
-                    <p className="font-mono text-[11px] text-[#8E9BB5]">
-                      Required to issue your 80G tax-exemption receipt
-                    </p>
-                  )}
+                  {fieldErrors.fullName && <p className="text-xs text-rose-600">{fieldErrors.fullName}</p>}
                 </div>
 
-                {/* Address full-width */}
-                <div className="md:col-span-2 space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">FULL ADDRESS</label>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-slate-700">Email Address (for 80G receipt) *</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="name@example.com"
+                    value={details.email}
+                    onChange={(e) => setDetails((prev) => ({ ...prev, email: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:border-amber-500"
+                  />
+                  {fieldErrors.email && <p className="text-xs text-rose-600">{fieldErrors.email}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-slate-700">10-Digit Mobile Number *</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-medium">+91</span>
+                    <input
+                      type="tel"
+                      maxLength={10}
+                      required
+                      placeholder="9876543210"
+                      value={details.mobile}
+                      onChange={(e) => setDetails((prev) => ({ ...prev, mobile: e.target.value }))}
+                      className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:border-amber-500"
+                    />
+                  </div>
+                  {fieldErrors.mobile && <p className="text-xs text-rose-600">{fieldErrors.mobile}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-slate-700">
+                    PAN Card Number {baseAmount >= 2000 ? '*' : '(Optional for gifts < ₹2,000)'}
+                  </label>
                   <input
                     type="text"
+                    maxLength={10}
+                    placeholder="ABCDE1234F"
+                    value={details.pan}
+                    onChange={(e) => setDetails((prev) => ({ ...prev, pan: e.target.value.toUpperCase() }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm uppercase font-mono tracking-wider focus:outline-hidden focus:border-amber-500"
+                  />
+                  {panError && <p className="text-xs text-rose-600">{panError}</p>}
+                </div>
+
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="block text-xs font-semibold text-slate-700">Address (for tax receipt)</label>
+                  <input
+                    type="text"
+                    placeholder="Street, locality, landmark"
                     value={details.address}
                     onChange={(e) => setDetails((prev) => ({ ...prev, address: e.target.value }))}
-                    placeholder="Street address, house no."
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:border-amber-500"
                   />
                 </div>
 
-                {/* City */}
                 <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">CITY</label>
+                  <label className="block text-xs font-semibold text-slate-700">City</label>
                   <input
                     type="text"
+                    placeholder="Jaipur / Mumbai / Delhi"
                     value={details.city}
                     onChange={(e) => setDetails((prev) => ({ ...prev, city: e.target.value }))}
-                    placeholder="e.g. Jaipur"
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:border-amber-500"
                   />
                 </div>
 
-                {/* State dropdown */}
                 <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">STATE</label>
+                  <label className="block text-xs font-semibold text-slate-700">State</label>
                   <select
                     value={details.state}
                     onChange={(e) => setDetails((prev) => ({ ...prev, state: e.target.value }))}
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-sans-devanagari text-sm focus-marigold"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-hidden focus:border-amber-500"
                   >
                     {indianStates.map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
                 </div>
-
-                {/* PIN Code */}
-                <div className="space-y-1">
-                  <label className="block font-mono text-xs text-[#8E9BB5]">PIN CODE</label>
-                  <input
-                    type="text"
-                    value={details.pinCode}
-                    onChange={(e) => setDetails((prev) => ({ ...prev, pinCode: e.target.value }))}
-                    placeholder="302001"
-                    className="w-full bg-white border border-[#8E9BB5]/40 rounded-[4px] px-3 py-2 font-mono text-sm focus-marigold"
-                  />
-                </div>
               </div>
 
-              {/* Stacked Checkboxes */}
-              <div className="space-y-3 pt-2">
-                <label className="flex items-center space-x-3 cursor-pointer">
+              {/* Checkboxes */}
+              <div className="pt-2 space-y-3 text-xs text-slate-600">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={details.addFeeCoverage}
+                    onChange={(e) => setDetails((prev) => ({ ...prev, addFeeCoverage: e.target.checked }))}
+                    className="rounded text-amber-500 focus:ring-amber-400 w-4 h-4"
+                  />
+                  <span>
+                    Add 2% (₹{Math.round(baseAmount * 0.02)}) to cover payment gateway fees so 100% of my gift reaches the field.
+                  </span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={details.isCitizen}
                     onChange={(e) => setDetails((prev) => ({ ...prev, isCitizen: e.target.checked }))}
-                    className="rounded-[2px] border-[#8E9BB5] text-[#E39B2C] focus-marigold"
-                    required
+                    className="rounded text-amber-500 focus:ring-amber-400 w-4 h-4"
                   />
-                  <span className="font-sans-devanagari text-sm text-[#14160F]">
-                    I am an Indian citizen or resident *
-                  </span>
-                </label>
-
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={details.isAnonymous}
-                    onChange={(e) => setDetails((prev) => ({ ...prev, isAnonymous: e.target.checked }))}
-                    className="rounded-[2px] border-[#8E9BB5] text-[#E39B2C] focus-marigold"
-                  />
-                  <span className="font-sans-devanagari text-sm text-[#14160F]">
-                    Give anonymously
-                  </span>
-                </label>
-
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={details.receiveUpdates}
-                    onChange={(e) => setDetails((prev) => ({ ...prev, receiveUpdates: e.target.checked }))}
-                    className="rounded-[2px] border-[#8E9BB5] text-[#E39B2C] focus-marigold"
-                  />
-                  <span className="font-sans-devanagari text-sm text-[#14160F]">
-                    Send me updates from LIFE
-                  </span>
+                  <span>I confirm I am an Indian Citizen or entity making this donation from domestic Indian funds.</span>
                 </label>
               </div>
-
-              <div className="hairline-b pt-4" />
-            </div>
-
-            {/* STEP 03 — CONFIRM (D2) */}
-            <div className="space-y-6">
-              <div className="font-mono text-xs text-[#8E9BB5] uppercase tracking-widest border-b border-[#8E9BB5]/20 pb-2">
-                STEP 03 — CONFIRM
-              </div>
-
-              {/* Hairline-separated summary */}
-              <div className="bg-white p-4 rounded-[4px] hairline-all space-y-2 font-mono text-xs">
-                <div className="flex justify-between py-1 border-b border-[#8E9BB5]/20">
-                  <span className="text-[#8E9BB5]">DONATION AMOUNT</span>
-                  <span className="font-bold text-[#101C3A]">₹{finalAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-[#8E9BB5]/20">
-                  <span className="text-[#8E9BB5]">FREQUENCY</span>
-                  <span className="uppercase text-[#101C3A]">{details.frequency}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-[#8E9BB5]">PROGRAMME</span>
-                  <span className="text-[#101C3A] text-right">{details.programme}</span>
-                </div>
-              </div>
-
-              {paymentsEnabled === false && (
-                <div className="rounded-[4px] border border-[#E39B2C]/50 bg-[#E39B2C]/10 p-4 space-y-1">
-                  <div className="font-mono text-xs uppercase tracking-widest text-[#101C3A]">
-                    Online donations opening soon
-                  </div>
-                  <p className="text-sm text-[#14160F]/80">
-                    Our payment gateway is being activated. In the meantime you can give by bank
-                    transfer or UPI using the details in the panel alongside — every rupee reaches us
-                    exactly the same way, and we will issue your 80G receipt by email.
-                  </p>
-                </div>
-              )}
 
               {formError && (
-                <div
-                  role="alert"
-                  className="rounded-[4px] border border-[#BA1A1A]/40 bg-[#BA1A1A]/5 p-4 text-sm text-[#BA1A1A]"
-                >
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                   {formError}
                 </div>
               )}
 
-              {/* Full-width Marigold Button */}
-              <div>
+              {/* Submit Button */}
+              <div className="pt-2">
                 <button
                   type="button"
-                  disabled={!requiredFilled || isSubmitting || paymentsEnabled === false}
                   onClick={validateAndPay}
-                  className={`w-full py-4 rounded-[4px] font-sans-devanagari font-bold text-base transition-all cursor-pointer ${
-                    !requiredFilled || isSubmitting || paymentsEnabled === false
-                      ? 'bg-[#8E9BB5]/40 text-[#14160F]/40 cursor-not-allowed'
-                      : 'bg-[#E39B2C] text-[#101C3A] hover:bg-[#e09117]'
+                  disabled={!requiredFilled || isSubmitting}
+                  className={`w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
+                    requiredFilled && !isSubmitting
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-amber-500 shadow-amber-500/20 hover:scale-[1.01]'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                   }`}
                 >
-                  {isSubmitting
-                    ? 'Opening secure checkout…'
-                    : paymentsEnabled === false
-                      ? 'Online donations opening soon'
-                      : `Pay ₹${finalAmount.toLocaleString('en-IN')} securely`}
+                  <Lock className="w-4 h-4" />
+                  <span>Donate ₹{finalAmount.toLocaleString('en-IN')} Securely</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
+                <p className="text-center text-[11px] text-slate-500 mt-2">
+                  🔒 256-bit SSL encrypted • Instant 80G tax receipt will be emailed immediately
+                </p>
               </div>
+            </div>
 
-              {/* 13px muted text with lock icon */}
-              <div className="flex items-start space-x-2 text-[13px] text-[#8E9BB5] font-mono">
-                <Lock size={14} className="mt-0.5 flex-shrink-0" />
-                <span>
-                  You'll be redirected to Razorpay's secure checkout. LIFE never stores your card details.
+            {/* OFFLINE DONATION CARD (UPI & DIRECT NEFT BANK TRANSFER) */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2 text-slate-900 font-serif-display text-lg font-bold">
+                  <Landmark className="w-5 h-5 text-amber-600" />
+                  <span>Prefer Direct Bank Transfer (NEFT/RTGS) or UPI?</span>
+                </div>
+                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md">
+                  Zero Processing Fees
                 </span>
               </div>
-            </div>
 
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Bank Details */}
+                <div className="space-y-3 bg-stone-50 p-4 rounded-xl border border-slate-200/70 text-xs">
+                  <span className="font-bold text-slate-800 uppercase tracking-wider block">
+                    Institutional Bank Account
+                  </span>
+                  
+                  <div className="space-y-2 font-mono text-[11px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Account Name:</span>
+                      <span className="text-slate-900 font-bold truncate max-w-[180px]">
+                        {ORG.bankDetails.accountName}
+                      </span>
+                    </div>
 
-          {/* Right 4 Columns: Sticky Summary Panel (D3) */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-24 bg-white hairline-all p-6 rounded-[4px] space-y-6">
-              
-              {/* Selected amount in Fraunces 36px with frequency and programme in mono beneath */}
-              <div className="border-b border-[#8E9BB5]/20 pb-4">
-                <div className="font-fraunces text-4xl font-bold text-[#101C3A]">
-                  ₹{finalAmount.toLocaleString('en-IN')}
-                </div>
-                <div className="font-mono text-xs text-[#8E9BB5] uppercase tracking-wider mt-1">
-                  {details.frequency} · {details.programme}
-                </div>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Account No:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-900 font-bold">{ORG.bankDetails.accountNumber}</span>
+                        <button
+                          onClick={() => copyToClipboard(ORG.bankDetails.accountNumber, 'acc')}
+                          className="p-1 rounded hover:bg-slate-200 text-slate-600"
+                          title="Copy account number"
+                        >
+                          {copiedItem === 'acc' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
 
-              {/* What your gift does — 4 hairline rows */}
-              <div className="space-y-3">
-                <h4 className="font-mono text-xs uppercase tracking-widest text-[#101C3A]">
-                  WHAT YOUR GIFT DOES
-                </h4>
-                <div className="space-y-2 text-xs font-sans-devanagari text-[#14160F]">
-                  <div className="py-2 border-b border-[#8E9BB5]/20 flex justify-between items-center">
-                    <span className="font-mono font-bold text-[#101C3A]">₹500</span>
-                    <span className="text-right text-[#8E9BB5]">prints 200 Hindi leaflets</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">IFSC Code:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-900 font-bold">{ORG.bankDetails.ifsc}</span>
+                        <button
+                          onClick={() => copyToClipboard(ORG.bankDetails.ifsc, 'ifsc')}
+                          className="p-1 rounded hover:bg-slate-200 text-slate-600"
+                          title="Copy IFSC"
+                        >
+                          {copiedItem === 'ifsc' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Bank & Branch:</span>
+                      <span className="text-slate-900">{ORG.bankDetails.bankName}, {ORG.bankDetails.branch}</span>
+                    </div>
                   </div>
-                  <div className="py-2 border-b border-[#8E9BB5]/20 flex justify-between items-center">
-                    <span className="font-mono font-bold text-[#101C3A]">₹1,000</span>
-                    <span className="text-right text-[#8E9BB5]">trains 1 volunteer for a day</span>
-                  </div>
-                  <div className="py-2 border-b border-[#8E9BB5]/20 flex justify-between items-center">
-                    <span className="font-mono font-bold text-[#101C3A]">₹2,500</span>
-                    <span className="text-right text-[#8E9BB5]">produces 1 district radio spot</span>
-                  </div>
-                  <div className="py-2 flex justify-between items-center">
-                    <span className="font-mono font-bold text-[#101C3A]">₹5,000</span>
-                    <span className="text-right text-[#8E9BB5]">funds camp for 10 workers</span>
-                  </div>
                 </div>
-              </div>
 
-              {/* Three trust rows with small icons */}
-              <div className="border-t border-[#8E9BB5]/20 pt-4 space-y-2.5 text-xs font-mono text-[#101C3A]">
-                <div className="flex items-center space-x-2">
-                  <ShieldCheck size={16} className="text-[#2C6E8F]" />
-                  <span>80G registered society</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <FileCheck size={16} className="text-[#2C6E8F]" />
-                  <span>Audited financial reports published</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 size={16} className="text-[#2C6E8F]" />
-                  <span>No political affiliation</span>
-                </div>
-              </div>
+                {/* Direct UPI */}
+                <div className="space-y-3 bg-stone-50 p-4 rounded-xl border border-slate-200/70 text-xs flex flex-col justify-between">
+                  <div>
+                    <span className="font-bold text-slate-800 uppercase tracking-wider block mb-1">
+                      Instant UPI Payment
+                    </span>
+                    <p className="text-slate-500 text-xs">
+                      Send via Google Pay, PhonePe, Paytm, or BHIM directly to our registered UPI ID:
+                    </p>
+                  </div>
 
-              {/* Other ways to give */}
-              <div className="border-t border-[#8E9BB5]/20 pt-4 space-y-3">
-                <h4 className="font-mono text-xs uppercase tracking-widest text-[#101C3A]">
-                  OTHER WAYS TO GIVE
-                </h4>
-                <div className="space-y-3 font-mono text-[11px] text-[#8E9BB5]">
-                  <p className="font-sans-devanagari text-xs leading-relaxed">
-                    Prefer to give by bank transfer, UPI or cheque? Call or write to us and we will
-                    share the account details and issue your receipt directly.
-                  </p>
-                  <div className="space-y-1.5">
-                    {ORG.phones.map((phone) => (
-                      <a
-                        key={phone}
-                        href={`tel:${phone.replace(/\s/g, '')}`}
-                        className="flex items-center space-x-2 p-2 bg-[#EFEDE6] rounded-[4px] text-[#101C3A] hover:text-[#2C6E8F]"
-                      >
-                        <Smartphone size={14} />
-                        <span>{phone}</span>
-                      </a>
-                    ))}
-                    <a
-                      href={`mailto:${ORG.email}`}
-                      className="flex items-center space-x-2 p-2 bg-[#EFEDE6] rounded-[4px] text-[#101C3A] hover:text-[#2C6E8F] break-all"
+                  <div className="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+                    <span className="font-mono font-bold text-slate-900 text-xs">
+                      {ORG.bankDetails.upiId}
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(ORG.bankDetails.upiId, 'upi')}
+                      className="px-2.5 py-1 rounded bg-amber-50 text-amber-900 hover:bg-amber-100 font-semibold text-[11px] flex items-center gap-1"
                     >
-                      <Landmark size={14} />
-                      <span>{ORG.email}</span>
-                    </a>
+                      {copiedItem === 'upi' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedItem === 'upi' ? 'Copied' : 'Copy'}</span>
+                    </button>
                   </div>
+
+                  <p className="text-[11px] text-slate-500">
+                    After making a direct transfer, email your UTR/Reference number to <strong className="text-slate-700">{ORG.email}</strong> to receive your 80G tax certificate.
+                  </p>
                 </div>
               </div>
-
             </div>
           </div>
 
+          {/* Right Column: Dynamic Sticky Summary & Trust Card (4 Cols) */}
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            
+            {/* Summary Card */}
+            <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
+              <div className="border-b border-slate-800 pb-4">
+                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest block">
+                  Donation Summary
+                </span>
+                <div className="flex items-baseline justify-between mt-1">
+                  <span className="font-serif-display text-3xl font-extrabold text-white">
+                    ₹{finalAmount.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-xs text-slate-400 uppercase font-semibold">
+                    {details.frequency}
+                  </span>
+                </div>
+              </div>
+
+              {/* 80G Tax Deduction Estimator */}
+              <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-300 font-medium">80G Tax Deduction:</span>
+                  <span className="text-emerald-400 font-bold">₹{estimatedTaxSaving.toLocaleString('en-IN')}</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-tight">
+                  You can claim a 50% deduction on your taxable income under Section 80G.
+                </p>
+              </div>
+
+              {/* Line items */}
+              <div className="space-y-2.5 text-xs text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Designated Cause:</span>
+                  <span className="font-medium text-right max-w-[170px] truncate">{details.programme}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Direct Field Allocation:</span>
+                  <span className="font-bold text-emerald-400">88% (Guaranteed)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Tax Exemption Receipt:</span>
+                  <span className="font-bold text-white">Instant Email & PDF</span>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="pt-2 border-t border-slate-800 space-y-2 text-xs text-slate-400">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Government Registered Non-Profit</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>256-Bit SSL Payment Protection</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span>Over 30 Years of Unbroken Trust</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Helpline Card */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs text-xs space-y-2 text-slate-600">
+              <span className="font-bold text-slate-900 block">Need assistance with your gift?</span>
+              <p>Our donor support desk in Jaipur is available Monday to Saturday (9 AM - 6 PM IST):</p>
+              <a href="tel:+917014778387" className="font-bold text-amber-600 block hover:underline">
+                📞 +91 70147 78387
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ Accordion Section */}
+        <div className="mt-16 max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="font-serif-display text-2xl font-bold text-slate-900">
+              Frequently Asked Questions About Donating
+            </h3>
+            <p className="text-slate-500 text-xs sm:text-sm">
+              Everything you need to know about 80G tax deductions, receipts, and our financial integrity
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {donationFaqs.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div
+                  key={faq.question}
+                  className="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-xs"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                    className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-slate-900 hover:bg-slate-50/80 transition-colors"
+                  >
+                    <span>{faq.question}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-4 pb-4 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
-
     </div>
   );
 };
