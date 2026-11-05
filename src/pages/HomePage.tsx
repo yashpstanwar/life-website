@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 interface HomePageProps {
-  onNavigate: (page: PageId, donationPreset?: { amount: number; frequency: 'one-time' | 'monthly' }) => void;
+  onNavigate: (page: PageId, extra?: unknown) => void;
   language: Language;
 }
 
