@@ -3,55 +3,93 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LIFE — Indian Institute of Development and Communication</title>
+    <title>LIFE NGO — Indian Institute of Development and Communication (I.I.D.C.)</title>
     <meta
       name="description"
-      content="LIFE (I.I.D.C.) builds the campaigns, research and training that carry development work the last mile. A registered society based in Jaipur, Rajasthan."
+      content="Empowering last-mile rural communities across Rajasthan through development communication, maternal healthcare literacy, child education, and women's self-reliance. Registered 80G tax-exempt society established in 1994."
     />
+    <meta name="keywords" content="LIFE NGO, IIDC Jaipur, Indian Institute of Development and Communication, Rajasthan NGO, 80G tax exemption donation, maternal health Barmer, rural literacy, development communication" />
     <link rel="canonical" href="https://lifengo.org/" />
-    <meta name="theme-color" content="#101C3A" />
+    <meta name="theme-color" content="#0F172A" />
     <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
     <link rel="apple-touch-icon" href="/logo-mark.svg" />
 
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="LIFE (I.I.D.C.)" />
-    <meta property="og:title" content="LIFE — development communication from Jaipur" />
+    <meta property="og:title" content="LIFE NGO — Carrying Development Work the Last Mile in Rajasthan" />
     <meta
       property="og:description"
-      content="A scheme nobody hears about helps nobody. LIFE builds the campaigns, research and training that carry development work the last mile."
+      content="Over 30 years bridging policy and remote communities through hyper-localized audio-visual campaigns, maternal healthcare drives, and master trainer certification."
     />
     <meta property="og:url" content="https://lifengo.org/" />
     <meta property="og:image" content="https://lifengo.org/og-image.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LIFE NGO — Indian Institute of Development and Communication" />
+    <meta name="twitter:description" content="30+ years empowering 160,000+ rural citizens across Rajasthan. 80G Tax-exempt donation eligible." />
+    <meta name="twitter:image" content="https://lifengo.org/og-image.jpg" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Devanagari:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "NGO",
-        "name": "Indian Institute of Development and Communication (I.I.D.C.)",
-        "alternateName": "LIFE",
-        "url": "https://lifengo.org/",
-        "logo": "https://lifengo.org/logo-mark.svg",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Jaipur",
-          "addressRegion": "Rajasthan",
-          "addressCountry": "IN"
-        },
-        "areaServed": "IN"
+        "@graph": [
+          {
+            "@type": "NGO",
+            "@id": "https://lifengo.org/#organization",
+            "name": "Indian Institute of Development and Communication (I.I.D.C.)",
+            "alternateName": "LIFE NGO",
+            "url": "https://lifengo.org/",
+            "logo": "https://lifengo.org/logo-mark.svg",
+            "foundingDate": "1994",
+            "taxID": "AAATI2486E",
+            "nonprofitStatus": "Nonprofit501c3",
+            "description": "A pioneering grassroots development communication and research institute empowering underserved desert and rural populations across Rajasthan.",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "19, Shri Ram Nagar-B, Kanta, Jhotwara",
+              "addressLocality": "Jaipur",
+              "addressRegion": "Rajasthan",
+              "postalCode": "302012",
+              "addressCountry": "IN"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+91-7014778387",
+              "contactType": "donor support and inquiries",
+              "email": "lifengo.org@gmail.com",
+              "areaServed": "IN",
+              "availableLanguage": ["English", "Hindi"]
+            },
+            "sameAs": [
+              "https://lifengo.org/",
+              "https://github.com/yashpstanwar/life-website"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://lifengo.org/#website",
+            "url": "https://lifengo.org/",
+            "name": "LIFE NGO",
+            "publisher": {
+              "@id": "https://lifengo.org/#organization"
+            }
+          }
+        ]
       }
     </script>
   </head>
-  <body
-    class="bg-[#EFEDE6] text-[#14160F] antialiased selection:bg-[#E39B2C] selection:text-[#101C3A]"
-  >
+  <body class="bg-stone-50 text-slate-900 antialiased selection:bg-amber-400 selection:text-slate-950 font-sans">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

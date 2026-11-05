@@ -7,6 +7,7 @@ export type PageId =
   | 'training'
   | 'get-involved'
   | 'contact'
+  | 'legal'
   | 'donate-success'
   | 'donate-failure';
 
@@ -26,6 +27,10 @@ export interface ProgrammePillar {
   titleHi: string;
   description: string;
   descriptionHi: string;
+  iconName: string;
+  accentColor: string;
+  metric: string;
+  metricLabel: string;
 }
 
 export interface DonationDetails {
@@ -59,15 +64,57 @@ export interface ProgrammeItem {
   duration?: string;
   partners?: string;
   reach?: string;
+  problemStatement?: string;
+  interventionMethod?: string;
+  keyOutcomes?: string[];
+  testimonial?: {
+    quote: string;
+    author: string;
+    role: string;
+  };
 }
 
-export interface ResearchPaper {
+export interface DistrictImpact {
+  id: string;
+  name: string;
+  nameHi: string;
+  tagline: string;
+  stats: {
+    villages: number;
+    beneficiaries: string;
+    activePrograms: number;
+  };
+  keyInitiative: string;
+  description: string;
+  image: string;
+}
+
+export interface ImpactStory {
+  id: string;
+  name: string;
+  location: string;
+  category: string;
+  quote: string;
+  story: string;
+  impactMetric: string;
+  image: string;
+  audioSampleTitle?: string;
+}
+
+export interface VolunteerRole {
   id: string;
   title: string;
-  type: 'Survey' | 'Evaluation' | 'Impact study';
-  commissionedBy: string;
+  department: string;
+  commitment: string;
+  location: string;
+  description: string;
+  requirements: string[];
+}
+
+export interface Milestone {
   year: string;
-  fileSize: string;
+  title: string;
+  description: string;
 }
 
 export interface CourseItem {
@@ -77,6 +124,16 @@ export interface CourseItem {
   format: string;
   location: string;
   nextStartDate: string;
+  seatsTotal: number;
+  seatsRemaining: number;
+  overview: string;
+  modules: string[];
+}
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+  category: 'donation' | 'tax80g' | 'work' | 'volunteer';
 }
 
 /** Navigation callback shared by every page component. */
