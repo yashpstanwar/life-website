@@ -1,32 +1,49 @@
 import React from 'react';
 import { PageId } from '../types';
-import { SignalBars } from '../components/SignalBars';
+import { ArrowLeft, Home, Search, Heart } from 'lucide-react';
 
 interface Props {
   onNavigate: (page: PageId) => void;
 }
 
 export const NotFoundPage: React.FC<Props> = ({ onNavigate }) => (
-  <div className="bg-[#101C3A] text-[#EFEDE6] min-h-[70vh] flex items-center px-4 sm:px-8">
-    <div className="max-w-2xl mx-auto space-y-6">
-      <SignalBars count={9} heightLevel={2} className="h-10" />
-      <div className="font-mono text-xs uppercase tracking-widest text-[#8E9BB5]">Error 404</div>
-      <h1 className="font-fraunces text-4xl sm:text-5xl font-bold">This page isn't here.</h1>
-      <p className="text-[#8E9BB5] max-w-md">
-        The link may be out of date. Everything LIFE publishes is reachable from the main navigation.
-      </p>
-      <div className="flex flex-wrap gap-3 pt-2">
+  <div className="w-full bg-stone-50 min-h-[70vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-xl mx-auto text-center space-y-6">
+      <span className="font-serif-display text-7xl sm:text-8xl font-black text-amber-500/20 block">
+        404
+      </span>
+      <div className="space-y-2">
+        <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-slate-900">
+          Page Not Found
+        </h1>
+        <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
+          The page or campaign link you followed may have moved or been updated. Everything LIFE publishes is reachable from the navigation.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
         <button
           onClick={() => onNavigate('home')}
-          className="bg-[#E39B2C] text-[#101C3A] px-6 py-3 rounded-[4px] font-bold cursor-pointer hover:bg-[#e09117]"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors cursor-pointer"
         >
-          Back to home
+          <Home className="w-4 h-4" />
+          <span>Return to Homepage</span>
         </button>
+
         <button
-          onClick={() => onNavigate('contact')}
-          className="border border-[#8E9BB5]/40 px-6 py-3 rounded-[4px] cursor-pointer hover:border-[#E39B2C]"
+          onClick={() => onNavigate('work')}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-white font-semibold text-xs transition-colors cursor-pointer"
         >
-          Report a broken link
+          <Search className="w-4 h-4" />
+          <span>Explore Our Work</span>
+        </button>
+
+        <button
+          onClick={() => onNavigate('donate')}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
+        >
+          <Heart className="w-4 h-4 fill-slate-950" />
+          <span>Support Our Cause</span>
         </button>
       </div>
     </div>
